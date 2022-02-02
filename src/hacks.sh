@@ -27,7 +27,7 @@ if [[ -d "$base_dir/../.git" ]]; then
     . $base_dir/utils.sh
 elif [[ $base_dir == "/usr/bin" ]]; then
     plugins_dir="/usr/libexec/sodalite-hacks/plugins/"
-    . /usr/libexec/sodalite-hacks/utils.js
+    . /usr/libexec/sodalite-hacks/utils.sh
 else
     die "Unable to initialize"
 fi
