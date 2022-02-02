@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+prog=$(basename "$(realpath -s "$0")" | cut -d. -f1)
 cmd=$@
 base_dir="$(dirname "$(realpath -s "$0")")"
 plugins_dir=""
@@ -35,7 +36,7 @@ fi
 function print_help() {
     say "Sodalite Hacks"
     say "\nUsage:"
-    say "  $0 [command] [options]"
+    say "  $prog [command] [options]"
     say "\nCommands:"
 
     for f in $plugins_dir/*.sh; do
@@ -71,7 +72,7 @@ function invoke_plugin() {
             say "\nUsage:"
             
             if [[ ! -z $_PLUGIN_OPTIONS ]]; then
-                say "  $0 $plugin [options]"
+                say "  $prog $plugin [options]"
                 say "\nOptions:"
             
                 for i in "${_PLUGIN_OPTIONS[@]}"; do
@@ -86,7 +87,7 @@ function invoke_plugin() {
                     say "  $param\t$_PLUGIN_OPTION_HELP"
                 done
             else
-                say "  $0 $plugin"
+                say "  $prog $plugin"
             fi
             
             exit 0
