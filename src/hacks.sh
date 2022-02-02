@@ -62,7 +62,7 @@ function invoke_plugin() {
 
     if [[ -f $plugin_file ]]; then
         source_plugin $plugin_file
-        d
+
         if [[ $options == "--help" ]]; then
             [[ -z $_PLUGIN_TITLE ]] && _PLUGIN_TITLE="$plugin"
             [[ -z $_PLUGIN_DESCRIPTION ]] && _PLUGIN_DESCRIPTION="(No description)"
