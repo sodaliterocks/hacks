@@ -39,6 +39,13 @@ function main() {
 
 function invoke_install_epiphany() {
     say "Installing Epiphany from AppCenter..."
+    
+    $(flatpak remotes --columns=url | grep "https://flatpak.elementary.io/repo/" > /dev/null 2>&1) || is_appcenter_installed="false"
+    
+    if [[ $(is_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
+        invoke_setup_appcenter
+    fi
+    
     flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
     install_app org.freedesktop.Platform.GL.default flathub 21.08
     install_app org.gnome.Epiphany appcenter stable
@@ -108,6 +115,12 @@ function is_app_installed() {
     echo $installed
 }
 
+function is_repo_installed() {
+    if [[ $(flatpak remotes --columns=url | grep "$1") ]]; then
+        echo "true"
+    fi
+}
+
 function install_app() {
     app=$1
     branch=$3
@@ -121,10 +134,7 @@ function install_app() {
 }
 
 function install_pantheon_apps() {
-    is_appcenter_installed="true"
-    $(flatpak remotes --columns=url | grep "https://flatpak.elementary.io/repo/" > /dev/null 2>&1) || is_appcenter_installed="false"
-
-    if [[ $is_appcenter_installed == "true" ]]; then
+    if [[ $(is_repo_installed "https://flatpak.elementary.io/repo/") == "true" ]]; then
         install_app org.gnome.Evince appcenter
         install_app org.gnome.FileRoller appcenter
     fi
