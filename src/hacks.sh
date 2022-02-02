@@ -60,9 +60,8 @@ function invoke_plugin() {
     debug "Invoking executable '$plugin_file'"
 
     if [[ -f $plugin_file ]]; then
-        chmod +x $plugin_file
         source_plugin $plugin_file
-        
+        d
         if [[ $options == "--help" ]]; then
             [[ -z $_PLUGIN_TITLE ]] && _PLUGIN_TITLE="$plugin"
             [[ -z $_PLUGIN_DESCRIPTION ]] && _PLUGIN_DESCRIPTION="(No description)"
