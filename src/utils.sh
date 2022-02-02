@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 
+function get_answer() {
+    question=$@
+
+    if [[ ! -n $question ]]; then
+        question="Continue?"
+    fi
+
+    while true; do
+        read -p "$question [Y/n]: " answer
+        case $answer in
+            [Yy]* ) echo "y"; return ;;
+            [Nn]* ) echo "n"; return ;;
+            * ) ;;
+        esac
+    done
+}
+
 function parse_plugin_option() {
     IFS=";" read -r -a option <<< "${@}"
 

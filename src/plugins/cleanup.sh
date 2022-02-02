@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 _PLUGIN_TITLE="Cleanup"
-_PLUGIN_DESCRIPTION="Remove various junk files"
+_PLUGIN_DESCRIPTION="Remove various system junk files"
 _PLUGIN_OPTIONS=(
     "all;a;Cleanup everything (runs all options)"
     "flatpak;;Remove Flatpak unused packages"

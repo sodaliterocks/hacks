@@ -50,7 +50,7 @@ function print_help() {
     done
     
     say "\nOptions:"
-    say " -h, --help\tShow help (including list of plugins)"
+    say " -h, --help\tShow help (invoking with no [command] lists all available plugins)"
 }
 
 function invoke_plugin() {
@@ -63,7 +63,7 @@ function invoke_plugin() {
     if [[ -f $plugin_file ]]; then
         source_plugin $plugin_file
 
-        if [[ $options == "--help" ]]; then
+        if { [[ $options == "--help" ]] || [[ $options == "-h" ]]; }; then
             [[ -z $_PLUGIN_TITLE ]] && _PLUGIN_TITLE="$plugin"
             [[ -z $_PLUGIN_DESCRIPTION ]] && _PLUGIN_DESCRIPTION="(No description)"
         
