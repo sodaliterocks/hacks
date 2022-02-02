@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-_PLUGIN_TITLE="Clean-up"
+_PLUGIN_TITLE="Cleanup"
 _PLUGIN_DESCRIPTION="Remove various junk files"
 _PLUGIN_OPTIONS=(
-    "all;a;Clean-up everything (runs all options)"
+    "all;a;Cleanup everything (runs all options)"
     "flatpak;;Remove Flatpak unused packages"
     "rost-cache;;Remove rpm-ostree cache and temporary data"
     "rost-deployments;;Remove rpm-ostree pending and rollback deployments"

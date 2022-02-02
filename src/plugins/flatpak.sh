@@ -11,8 +11,6 @@ _PLUGIN_ROOT="true"
 
 function main() {
     if [[ -x "$(command -v flatpak)" ]]; then
-        has_run="false"
-        
         if [[ $install_epiphany == "true" ]]; then
             has_run="true"
             invoke_install_epiphany
@@ -28,7 +26,7 @@ function main() {
             invoke_setup_appcenter
         fi
         
-        if [[ $has_run == "false" ]]; then
+        if [[ $has_run != "true" ]]; then
             die "No option specified (see --help)"
         fi
     else
