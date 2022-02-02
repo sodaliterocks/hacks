@@ -53,7 +53,7 @@ function invoke_install_epiphany() {
 
 function invoke_remove_gnome_apps() {
     say "Removing default GNOME apps (if installed)..."
-    flatpak uninstall --assumeyes --force-remove --unused \
+    flatpak uninstall --assumeyes --force-remove --noninteractive \
         org.gnome.Calculator \
         org.gnome.Calendar \
         org.gnome.Characters \
@@ -71,6 +71,8 @@ function invoke_remove_gnome_apps() {
         org.gnome.eog \
         org.gnome.font-viewer \
         org.gnome.gedit
+        
+    flatpak uninstall --assumeyes --noninteractive --unused
         
     install_pantheon_apps
 }
