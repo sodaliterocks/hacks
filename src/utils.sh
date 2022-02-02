@@ -25,6 +25,23 @@ function parse_plugin_option() {
     _PLUGIN_OPTION_HELP="${option[2]}"
 }
 
+function rost_apply_live() {
+    message=$1
+    [[ -z $message ]] && message="Unable to apply changes live. Reboot required to complete installation."
+    
+    rpm-ostree ex apply-live
+
+    if [[ ! $? -eq 0 ]]; then
+        say "\n$message"
+        if [[ $(get_answer "Reboot now?") == "y" ]]; then
+            say "Rebooting..."
+            shutdown -r now
+        else
+            exit
+        fi
+    fi
+}
+
 function source_plugin() {
     plugin_file=$1
     

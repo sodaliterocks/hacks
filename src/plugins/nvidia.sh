@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 _PLUGIN_TITLE="Nvidia"
-_PLUGIN_DESCRIPTION="Manage proprietary Nvidia drivers"
+_PLUGIN_DESCRIPTION="Manage installation of proprietary Nvidia drivers"
 _PLUGIN_OPTIONS=(
     "install;i;Install proprietary Nvidia drivers"
     "uninstall;u;Uninstall proprietary Nvidia drivers"
@@ -58,10 +58,12 @@ function main() {
 function invoke_install() {
     check_nvidia_gpu
 
-    # TODO: Provide a way to get rid of these
+    # TODO: Uninstall RPMFusion if nothing depends on it
     if [[ ! -f /etc/yum.repos.d/rpmfusion-nonfree.repo ]]; then
         say "Installing RPMFusion repos..."
         rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+        
+        rost_apply_live "Unable to apply changes live. Reboot and re-run of this command required to complete the process."
     fi
     
     say "Installing Nvidia drivers ($driver)..."
@@ -95,11 +97,11 @@ function invoke_uninstall() {
 
 function ask_reboot() {
     if [[ $(get_answer "$1 complete. Reboot now?") == "y" ]]; then
-            say "Rebooting..."
-            shutdown -r now
-        else
-            exit
-        fi
+        say "Rebooting..."
+        shutdown -r now
+    else
+        exit
+    fi
 }
 
 function check_nvidia_gpu() {
