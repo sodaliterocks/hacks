@@ -27,7 +27,7 @@ function parse_plugin_option() {
 
 function rost_apply_live() {
     message=$1
-    [[ -z $message ]] && message="Unable to apply changes live. Reboot required to complete installation."
+    [[ -z $message ]] && message="Unable to apply changes live. Reboot required to process changes."
     
     rpm-ostree ex apply-live
 
