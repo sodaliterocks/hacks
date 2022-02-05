@@ -4,7 +4,7 @@ _PLUGIN_TITLE="Visual Studio Code"
 _PLUGIN_DESCRIPTION="Manage installation of Visual Studio Code"
 _PLUGIN_OPTIONS=(
     "install;i;Install Visual Studio Code"
-    "uninstall;u;Uninstall Visual Studio Code"
+    "uninstall;;Uninstall Visual Studio Code"
 )
 _PLUGIN_ROOT="true"
 

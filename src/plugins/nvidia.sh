@@ -4,9 +4,9 @@ _PLUGIN_TITLE="Nvidia"
 _PLUGIN_DESCRIPTION="Manage installation of proprietary Nvidia drivers"
 _PLUGIN_OPTIONS=(
     "install;i;Install proprietary Nvidia drivers"
-    "uninstall;u;Uninstall proprietary Nvidia drivers"
+    "uninstall;;Uninstall proprietary Nvidia drivers"
     "force;f;Force usage even if no Nvidia GPUs are detected"
-    "driver;d;Select which driver to manage (defaults to 495)"
+    "driver;;Select which driver to manage (default: latest)"
 )
 _PLUGIN_ROOT="true"
 
