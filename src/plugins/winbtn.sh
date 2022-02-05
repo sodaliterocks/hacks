@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 _PLUGIN_TITLE="Window Buttons"
-_PLUGIN_DESCRIPTION="Modify window button layout\nUse with caution: modifications are generally unsupported in Pantheon, and some apps may choose not to listen to this option."
+_PLUGIN_DESCRIPTION="Modify window button layout"
 _PLUGIN_OPTIONS=(
     "layout;l;Set which layout to use (default: default). Passing nothing or an incorrect value will list possible values"
     "reset;;Resets to default layout (same as '--layout default')"
