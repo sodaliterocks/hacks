@@ -50,7 +50,7 @@ function set_layout() {
     gsettings set org.pantheon.desktop.gala.appearance button-layout $wm_layout
 
     # TODO: Don't clobber any user changes to this value
-    gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/DialogsUseHeader': <0>, 'Gtk/EnablePrimaryPaste': <0>, 'Gtk/ShellShowsAppMenu': <0>, 'Gtk/DecorationLayout': <'$gnome_layout'>, ,'Gtk/ShowUnicodeMenu': <0>}"
+    gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/DialogsUseHeader': <0>, 'Gtk/EnablePrimaryPaste': <0>, 'Gtk/ShellShowsAppMenu': <0>, 'Gtk/DecorationLayout': <'$gnome_layout'>,'Gtk/ShowUnicodeMenu': <0>}"
 }
 
 function reset_layout() {
