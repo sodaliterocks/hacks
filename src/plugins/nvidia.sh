@@ -30,7 +30,7 @@ function main() {
             driver_packages="akmod-nvidia-340xx xorg-x11-drv-nvidia-340xx-cuda"
             ;;
         *)
-            die_message="Invalid --driver selection, choose either:\n"
+            die_message="Invalid --driver value, choose either:\n"
             die_message+=" - latest: current GeForce/Quadro/Tesla\n"
             die_message+=" - 470: legacy GeForce 600/700\n"
             die_message+=" - 390: legacy GeForce 400/500\n"
