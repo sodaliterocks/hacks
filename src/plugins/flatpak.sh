@@ -5,7 +5,7 @@ _PLUGIN_DESCRIPTION="Various helpers for Flatpak"
 _PLUGIN_OPTIONS=(
     "setup-appcenter;;Add AppCenter repository and install extra apps"
     "install-epiphany;;Install Epiphany from AppCenter"
-    "remove-gnome-apps;;Uninstall default GNOME apps"
+    "uninstall-gnome-apps;;Uninstall default GNOME apps"
 )
 _PLUGIN_ROOT="true"
 
@@ -16,9 +16,9 @@ function main() {
             invoke_install_epiphany
         fi
 
-        if [[ $remove_gnome_apps == "true" ]]; then
+        if [[ $uninstall_gnome_apps == "true" ]]; then
             has_run="true"
-            invoke_remove_gnome_apps
+            invoke_uninstall_gnome_apps
         fi
         
         if [[ $setup_appcenter == "true" ]]; then
@@ -49,7 +49,7 @@ function invoke_install_epiphany() {
     install_app org.gnome.Epiphany appcenter stable
 }
 
-function invoke_remove_gnome_apps() {
+function invoke_uninstall_gnome_apps() {
     say "Removing default GNOME apps (if installed)..."
     flatpak uninstall --assumeyes --force-remove --noninteractive \
         org.gnome.Calculator \
