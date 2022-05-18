@@ -63,6 +63,7 @@ function invoke_uninstall_gnome_apps() {
         org.gnome.Maps \
         org.gnome.NautilusPreviewer \
         org.gnome.Screenshot \
+        org.gnome.TextEditor \
         org.gnome.Weather \
         org.gnome.baobab \
         org.gnome.clocks \
