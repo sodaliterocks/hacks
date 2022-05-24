@@ -4,6 +4,7 @@ _PLUGIN_TITLE="Flatpak helpers"
 _PLUGIN_DESCRIPTION="Various helpers for Flatpak"
 _PLUGIN_OPTIONS=(
     "setup-appcenter;;Add AppCenter repository and install extra apps"
+    "setup-flathub;;Add Flathub repository"
     "install-epiphany;;Install Epiphany from AppCenter"
     "uninstall-gnome-apps;;Uninstall default GNOME apps"
 )
@@ -43,8 +44,11 @@ function invoke_install_epiphany() {
     if [[ $(is_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
         invoke_setup_appcenter
     fi
-    
-    flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
+
+    if [[ $(is_repo_installed "https://dl.flathub.org/repo/") != "true" ]]; then
+        invoke_setup_flathub
+    fi
+
     install_app org.freedesktop.Platform.GL.default flathub 21.08
     install_app org.gnome.Epiphany appcenter stable
 }
@@ -100,6 +104,13 @@ function invoke_setup_appcenter() {
     install_pantheon_apps
 }
 
+function invoke_setup_flathub() {
+    echo "Adding Flathub repository (if not exists)..."
+    flatpak remote-add
+        --if-not-exists
+        --system
+        flathub https://flathub.org/repo/flathub.flatpakrepo
+}
 
 function is_app_installed() {
     app=$1
@@ -117,7 +128,7 @@ function is_app_installed() {
 }
 
 function is_repo_installed() {
-    if [[ $(flatpak remotes --columns=url | grep "$1") ]]; then
+    if [[ $(flatpak remotes --columns=url --system | grep "$1") ]]; then
         echo "true"
     fi
 }
