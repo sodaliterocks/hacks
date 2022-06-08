@@ -62,6 +62,7 @@ function invoke_uninstall_gnome_apps() {
         org.gnome.Connections \
         org.gnome.Contacts \
         org.gnome.Evince \
+        org.gnome.Extensions \
         org.gnome.FileRoller \
         org.gnome.Logs \
         org.gnome.Maps \
