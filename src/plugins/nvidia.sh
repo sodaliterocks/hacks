@@ -12,6 +12,8 @@ _PLUGIN_ROOT="true"
 
 driver_packages=""
 kernel_args="rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1"
+rpmfusion_nvidia_file="/etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo"
+rpmfusion_nvidia_url="https://src.fedoraproject.org/rpms/fedora-workstation-repositories/raw/rawhide/f/rpmfusion-nonfree-nvidia-driver.repo"
 
 function main() {
     [[ -z $driver ]] && driver="latest"
@@ -58,22 +60,22 @@ function main() {
 function invoke_install() {
     check_nvidia_gpu
 
-    # TODO: Uninstall RPMFusion if nothing depends on it
-    # TODO: Better way to detect RPMFusion
-    if [[ ! -f /etc/yum.repos.d/rpmfusion-nonfree.repo ]]; then
-        say "Installing RPMFusion repos..."
-        rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-        
-        rost_apply_live "Unable to apply changes live. Reboot and re-run of this command required to complete the process."
+    if [[ ! -f $rpmfusion_nvidia_file ]]; then
+        say "Downloading RPMFusion Nvidia repos..."
+        curl $rpmfusion_nvidia_url --output $rpmfusion_nvidia_file
+
+         if ! [ $? -eq 0 ]; then
+            die "Unable to download RPMFusion Nvidia repo"
+         fi
     fi
-    
+
     say "Installing Nvidia drivers ($driver)..."
     rpm-ostree install $driver_packages
-        
+
     if [ $? -eq 0 ]; then
         say "Setting kernel arguments..."
         rpm-ostree kargs --append-if-missing="$kernel_args"
-        
+
         ask_reboot "Installation"
     else
         die "Installation failed"
@@ -82,14 +84,14 @@ function invoke_install() {
 
 function invoke_uninstall() {
     check_nvidia_gpu
-    
+
     say "Uninstall Nvidia drivers ($driver)..."
     rpm-ostree uninstall $driver_packages
-    
+
     if [ $? -eq 0 ]; then
         say "Unsetting kernel arguments..."
         rpm-ostree kargs --delete-if-present="$kernel_args"
-        
+
         ask_reboot "Uninstallation"
     else
         die "Uninstallation failed"
