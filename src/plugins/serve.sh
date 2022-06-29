@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 _PLUGIN_TITLE="HTTP Server"
-_PLUGIN_DESCRIPTION="..."
+_PLUGIN_DESCRIPTION="Serve static files over HTTP"
 _PLUGIN_OPTIONS=(
     "directory;d;Directory to serve"
     "port;p;Port to listen to"
