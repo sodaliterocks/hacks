@@ -5,6 +5,13 @@ cmd=$@
 base_dir="$(dirname "$(realpath -s "$0")")"
 plugins_dir=""
 
+if [[ ! -d "$base_dir/../.git" ]]; then
+    base_dir="/usr/libexec/sodalite-hacks"
+fi
+
+plugins_dir="$base_dir/plugins"
+. $base_dir/utils.sh
+
 function die() {
     message=$@
     say "\033[1;31mError: $message\033[0m"
@@ -22,16 +29,6 @@ function say() {
     message=$@
     echo -e "$@"
 }
-
-if [[ -d "$base_dir/../.git" ]]; then
-    plugins_dir="$base_dir/plugins"
-    . $base_dir/utils.sh
-elif [[ $base_dir == "/usr/bin" ]]; then
-    plugins_dir="/usr/libexec/sodalite-hacks/plugins"
-    . /usr/libexec/sodalite-hacks/utils.sh
-else
-    die "Unable to initialize"
-fi
 
 function print_help() {
     say "Sodalite Hacks"
