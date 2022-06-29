@@ -52,8 +52,9 @@ function main() {
         bluetooth) launch_setting network/bluetooth ;;
         color) gcm-viewer ;;
         datetime) launch_setting date ;;
+        default) launch_setting ;;
         display) launch_setting display ;;
-        info-overview|default) launch_setting about ;;
+        info-overview) launch_setting about ;;
         keyboard) launch_setting input/keyboard ;;
         mouse) launch_setting input/pointer ;;
         network|wifi) launch_setting network ;;
