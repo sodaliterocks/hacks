@@ -59,6 +59,7 @@ function invoke_install() {
     check_nvidia_gpu
 
     # TODO: Uninstall RPMFusion if nothing depends on it
+    # TODO: Better way to detect RPMFusion
     if [[ ! -f /etc/yum.repos.d/rpmfusion-nonfree.repo ]]; then
         say "Installing RPMFusion repos..."
         rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm

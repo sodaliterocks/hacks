@@ -29,7 +29,7 @@ function rost_apply_live() {
     message=$1
     [[ -z $message ]] && message="Unable to apply changes live. Reboot required to process changes."
     
-    rpm-ostree ex apply-live
+    rpm-ostree ex apply-live --allow-replacement
 
     if [[ ! $? -eq 0 ]]; then
         say "\n$message"
