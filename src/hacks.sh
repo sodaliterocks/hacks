@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 
-prog=$(basename "$(realpath -s "$0")" | cut -d. -f1)
+prog=$(basename "$(realpath -s "$0")")
 cmd=$@
 base_dir="$(dirname "$(realpath -s "$0")")"
 plugins_dir=""
 
-if [[ ! -d "$base_dir/../.git" ]]; then
-    base_dir="/usr/libexec/sodalite-hacks"
-fi
+[[ ! -d "$base_dir/../.git" ]] && base_dir="/usr/libexec/sodalite-hacks"
 
 plugins_dir="$base_dir/plugins"
 . $base_dir/utils.sh
@@ -67,12 +65,17 @@ function invoke_plugin() {
             [[ -z $_PLUGIN_TITLE ]] && _PLUGIN_TITLE="$plugin"
             [[ -z $_PLUGIN_DESCRIPTION ]] && _PLUGIN_DESCRIPTION="(No description)"
         
-            say "Sodalite Hacks: $_PLUGIN_TITLE"
+            say "$_PLUGIN_TITLE"
             say "  $_PLUGIN_DESCRIPTION"
             say "\nUsage:"
             
             if [[ ! -z $_PLUGIN_OPTIONS ]]; then
-                say "  $prog $plugin [options]"
+                if [[ $SODALITE_HACKS_OVERRIDE_USAGE_PREFIX == "" ]]; then
+                    say "  $prog $plugin [options]"
+                else
+                    say "  $SODALITE_HACKS_OVERRIDE_USAGE_PREFIX [options]"
+                fi
+                
                 say "\nOptions:"
             
                 for i in "${_PLUGIN_OPTIONS[@]}"; do
