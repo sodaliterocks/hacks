@@ -16,7 +16,7 @@ function main() {
             directory="${BASH_REMATCH[1]}"
             port="${BASH_REMATCH[3]}"
         else
-            die "Invalid position paramenters"
+            die "Invalid positional paramenters"
         fi
     fi
 
