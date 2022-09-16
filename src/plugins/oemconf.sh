@@ -9,7 +9,7 @@ _PLUGIN_OPTIONS=(
 _PLUGIN_ROOT="true"
 _PLUGIN_HIDDEN="true"
 
-OCG_LOGO_BASE_URL="https://git.zio.sh/sodaliterocks/lfs/raw/branch/main/oem-logos/"
+OCG_LOGO_BASE_URL="https://git.zio.sh/sodaliterocks/lfs/media/branch/main/oem-logos/"
 OCG_OEMCONF_FILE="/etc/oem.conf"
 OCG_OEMLOGO_FILE="/etc/oem-logo.png"
 
