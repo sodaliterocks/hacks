@@ -9,6 +9,9 @@ function get_answer() {
 
     while true; do
         read -p "$question [Y/n]: " answer
+        if [[ $answer = "" ]]; then
+            answer="Y"
+        fi
         case $answer in
             [Yy]* ) echo "y"; return ;;
             [Nn]* ) echo "n"; return ;;
