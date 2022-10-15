@@ -11,7 +11,7 @@ _PLUGIN_OPTIONS=(
 _PLUGIN_ROOT="true"
 
 driver_packages=""
-kernel_args="rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1"
+kernel_args="rd.driver.blacklist=nouveau modprobe.blacklist=nouveau nvidia-drm.modeset=1"
 
 function main() {
     [[ -z $driver ]] && driver="latest"
