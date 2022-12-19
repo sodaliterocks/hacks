@@ -123,13 +123,13 @@ function main() {
             if [[ ! $(grep -Fxq "$app" "$_installed_apps_file") ]]; then
                 update_status "Installing app '$app_id'..."
 
-                install_success="false"
+                install_success="true"
                 if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "false" ]]; then
                     install_flatpak_app "$app_repo" "$app_id" "$app_branch"
-                    [[ $? == 0 ]] && install_success="true"
+                    [[ $? != 0 ]] && install_success="false"
                 fi
 
-                [[ install_success="true" == "true" ]] && echo "$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
+                [[ install_success == "true" ]] && echo "$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
             fi
         else
             if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "true" ]]; then
