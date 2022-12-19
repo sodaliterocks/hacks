@@ -108,7 +108,7 @@ function main() {
         "pantheon:appcenter:io.elementary.camera:stable"
         "pantheon:appcenter:io.elementary.capnet-assist:stable"
         "pantheon:appcenter:io.elementary.screenshot:stable"
-        "pantheon:appcenter:io.elementary.tasks:stable"
+        #"pantheon:appcenter:io.elementary.tasks:stable"
         "pantheon:appcenter:io.elementary.videos:stable"
     )
 
@@ -122,10 +122,14 @@ function main() {
         if [[ "$app_core" == "$core" ]]; then
             if [[ ! $(grep -Fxq "$app" "$_installed_apps_file") ]]; then
                 update_status "Installing app '$app_id'..."
+
+                install_success="false"
                 if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "false" ]]; then
                     install_flatpak_app "$app_repo" "$app_id" "$app_branch"
-                    [[ $? == 0 ]] && echo "$app" >> $_installed_apps_file
+                    [[ $? == 0 ]] && install_success="true"
                 fi
+
+                [[ install_success="true" == "true" ]] && echo "$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
             fi
         else
             if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "true" ]]; then
