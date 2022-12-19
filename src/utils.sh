@@ -1,5 +1,31 @@
 #!/usr/bin/env bash
 
+_pidfile_dir="/var/run/sodalite-hacks"
+
+function get_confdir() {
+    confdir="/etc/sodalite"
+    [[ ! -d $confdir ]] && mkdir -p $confdir
+    echo $confdir
+}
+
+function del_pidfile() {
+    pid="$$"
+    pidfile=""
+
+    if [[ -n "$plugin" ]]; then
+        pidfile="$plugin"
+    else
+        pidfile="$1"
+    fi
+
+    pidfile="$pidfile.pid"
+
+    [[ "$(cat $_pidfile_dir/$pidfile)" == $pid ]] && rm -f "$_pidfile_dir/$pidfile"
+    [[ -z "$(ls -A $_pidfile_dir)" ]] && rm -fr "$_pidfile_dir"
+
+    echo "$pid"
+}
+
 function del_property() {
     file=$1
     property=$2
@@ -64,6 +90,25 @@ function rost_apply_live() {
             exit
         fi
     fi
+}
+
+function set_pidfile() {
+    pid="$$"
+    pidfile=""
+
+    if [[ -n "$plugin" ]]; then
+        pidfile="$plugin"
+    else
+        pidfile="$1"
+    fi
+
+    pidfile="$pidfile.pid"
+
+    [[ ! -d "$_pidfile_dir" ]] && mkdir -p "$_pidfile_dir"
+    touch "$_pidfile_dir/$pidfile"
+    echo "$$" > "$_pidfile_dir/$pidfile"
+
+    echo "$(cat "$_pidfile_dir/$pidfile")"
 }
 
 function set_property() {
