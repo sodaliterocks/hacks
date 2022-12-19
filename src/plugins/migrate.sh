@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-_PLUGIN_TITLE="Migrate"
-_PLUGIN_DESCRIPTION="..."
-#_PLUGIN_OPTIONS=(
-#    "setting;s;Panel for GNOME Control Center"
-#)
+_PLUGIN_TITLE="Sodalite migration tools"
+_PLUGIN_DESCRIPTION=""
+_PLUGIN_OPTIONS=(
+    "flatpak-apps;;"
+    "old-refs;;"
+)
 _PLUGIN_HIDDEN="true"
 _PLUGIN_ROOT="true"
 
@@ -58,11 +59,32 @@ function update_status() {
     fi
 }
 
-function main() {
-    pid="$(set_pidfile)"
-    core="$(get_core)"
-    run_flatpak_uninstall_unused="false"
+function migrate_old_refs() {
+    current_boot="$(rpm-ostree status | grep "*" | cut -d "*" -f2)"
+    current_ref="$(echo $current_boot | cut -d ":" -f2)"
+    current_remote="$(echo $current_boot | cut -d ":" -f1 | cut -d " " -f2)"
     
+    ref_to_migrate_to=""
+
+    case $current_ref in
+        "sodalite/stable/x86_64/base")
+            ref_to_migrate_to="sodalite/stable/x86_64/desktop"
+            ;;
+        "sodalite/f36/x86_64/base")
+            ref_to_migrate_to="sodalite/f36/x86_64/desktop"
+            ;;
+    esac
+
+    if [[ -n $ref_to_migrate_to ]]; then
+        update_status "Rebasing to '$ref_to_migrate_to'..."
+        rpm-ostree cancel
+        rpm-ostree rebase $ref_to_migrate_to
+    fi
+}
+
+function migrate_flatpak_apps() {
+    run_flatpak_uninstall_unused="false"
+
     touch "$_installed_apps_file"
 
     if [[ $core == "pantheon" ]]; then
@@ -144,6 +166,27 @@ function main() {
     if [[ $run_flatpak_uninstall_unused == "true" ]]; then
         update_status "Uninstalling unused apps..."
         flatpak uninstall --assumeyes --noninteractive --unused
+    fi
+}
+
+function main() {
+    pid="$(set_pidfile)"
+    core="$(get_core)"
+    has_run="false"
+
+    if [[ $flatpak_apps == "true" ]]; then
+        has_run="true"
+        migrate_flatpak_apps
+    fi
+
+    if [[ $old_refs == "true" ]]; then
+        has_run="true"
+        migrate_old_refs
+    fi
+
+    if [[ $has_run == "false" ]]; then
+        migrate_flatpak_apps
+        migrate_old_refs
     fi
 
     update_status
