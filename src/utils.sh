@@ -58,6 +58,12 @@ function get_answer() {
     done
 }
 
+function get_core() {
+    if [[ -f "/usr/lib/sodalite-core" ]]; then
+        echo "$(cat /usr/lib/sodalite-core)"
+    fi
+}
+
 function get_property() {
     file=$1
     property=$2

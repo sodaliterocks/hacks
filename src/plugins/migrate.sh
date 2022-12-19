@@ -60,16 +60,9 @@ function update_status() {
 
 function main() {
     pid="$(set_pidfile)"
-    core=""
+    core="$(get_core)"
     run_flatpak_uninstall_unused="false"
-
-    if [[ -f "/usr/lib/sodalite-core" ]]; then
-        core="$(cat /usr/lib/sodalite-core)"
-    else
-        del_pidfile
-        die "Core could not be determined"
-    fi
-
+    
     touch "$_installed_apps_file"
 
     if [[ $core == "pantheon" ]]; then
