@@ -73,18 +73,20 @@ function main() {
     touch "$_installed_apps_file"
 
     if [[ $core == "pantheon" ]]; then
-        update_status "Adding AppCenter remote..."
-        flatpak remote-add \
-            --if-not-exists \
-            --system \
-            --comment="The open source, pay-what-you-want app store from elementary" \
-            --description="Reviewed and curated by elementary to ensure a native, privacy-respecting, and secure experience" \
-            --gpg-import=/usr/share/gnupg/appcenter.gpg \
-            --homepage="https://appcenter.elementary.io/" \
-            --icon="https://flatpak.elementary.io/icon.svg" \
-            --if-not-exists \
-            --title="AppCenter" \
-            appcenter https://flatpak.elementary.io/repo/
+        if [[ $(is_flatpak_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
+            update_status "Adding AppCenter remote..."
+            flatpak remote-add \
+                --if-not-exists \
+                --system \
+                --comment="The open source, pay-what-you-want app store from elementary" \
+                --description="Reviewed and curated by elementary to ensure a native, privacy-respecting, and secure experience" \
+                --gpg-import=/usr/share/gnupg/appcenter.gpg \
+                --homepage="https://appcenter.elementary.io/" \
+                --icon="https://flatpak.elementary.io/icon.svg" \
+                --if-not-exists \
+                --title="AppCenter" \
+                appcenter https://flatpak.elementary.io/repo/
+        fi
     fi
 
     apps=(
@@ -141,7 +143,7 @@ function main() {
             fi
         fi
     done
-    
+
     if [[ $run_flatpak_uninstall_unused == "true" ]]; then
         update_status "Uninstalling unused apps..."
         flatpak uninstall --assumeyes --noninteractive --unused
