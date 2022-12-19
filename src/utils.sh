@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+function del_property() {
+    file=$1
+    property=$2
+
+    if [[ -f $file ]]; then
+        if [[ ! -z $(get_property $file $property) ]]; then
+            sed -i "s/^\($property=.*\)$//g" $file
+        fi
+    fi
+}
+
+
 function get_answer() {
     question=$@
 
@@ -18,6 +30,15 @@ function get_answer() {
             * ) ;;
         esac
     done
+}
+
+function get_property() {
+    file=$1
+    property=$2
+
+    if [[ -f $file ]]; then
+        echo $(grep -oP '(?<=^'"$property"'=).+' $file | tr -d '"')
+    fi
 }
 
 function parse_plugin_option() {
@@ -41,6 +62,24 @@ function rost_apply_live() {
             shutdown -r now
         else
             exit
+        fi
+    fi
+}
+
+function set_property() {
+    file=$1
+    property=$2
+    value=$3
+
+    if [[ -f $file ]]; then
+        if [[ -z $(get_property $file $property) ]]; then
+            echo "$property=\"$value\"" >> $file
+        else
+            if [[ $value =~ [[:space:]]+ ]]; then
+                value="\"$value\""
+            fi
+
+            sed -i "s/^\($property=\)\(.*\)$/\1$value/g" $file
         fi
     fi
 }
