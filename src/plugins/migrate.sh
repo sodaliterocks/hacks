@@ -63,22 +63,23 @@ function migrate_old_refs() {
     current_boot="$(rpm-ostree status | grep "*" | cut -d "*" -f2)"
     current_ref="$(echo $current_boot | cut -d ":" -f2)"
     current_remote="$(echo $current_boot | cut -d ":" -f1 | cut -d " " -f2)"
-    
+    current_version="$(get_property /etc/os-release VERSION)"
+
     ref_to_migrate_to=""
 
-    case $current_ref in
-        "sodalite/stable/x86_64/base")
+    case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2)" in
+        "sodalite/f36/x86_64/base:36-22.15")
             ref_to_migrate_to="sodalite/stable/x86_64/desktop"
             ;;
-        "sodalite/f36/x86_64/base")
+        "sodalite/f36/x86_64/base:36-22.15")
             ref_to_migrate_to="sodalite/f36/x86_64/desktop"
             ;;
     esac
 
     if [[ -n $ref_to_migrate_to ]]; then
         update_status "Rebasing to '$ref_to_migrate_to'..."
-        rpm-ostree cancel
-        rpm-ostree rebase $ref_to_migrate_to
+        #rpm-ostree cancel
+        #rpm-ostree rebase $ref_to_migrate_to
     fi
 }
 
@@ -151,7 +152,7 @@ function migrate_flatpak_apps() {
                     [[ $? != 0 ]] && install_success="false"
                 fi
 
-                [[ install_success == "true" ]] && echo "$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
+                [[ $install_success == "true" ]] && echo "$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
             fi
         else
             if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "true" ]]; then
