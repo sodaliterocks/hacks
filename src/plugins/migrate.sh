@@ -143,7 +143,7 @@ function migrate_flatpak_apps() {
         app_branch="$(echo "$app" | awk -F':' '{print $4}')"
 
         if [[ "$app_core" == "$core" ]]; then
-            if [[ ! $(grep -Fxq "$app" "$_installed_apps_file") ]]; then
+            if [[ ! $(grep -Fxq "$app_core:$app_repo:$app_id:$app_branch" "$_installed_apps_file") ]]; then
                 update_status "Installing app '$app_id'..."
 
                 install_success="true"
