@@ -4,6 +4,7 @@ _PLUGIN_TITLE="Sodalite migration tools"
 _PLUGIN_DESCRIPTION=""
 _PLUGIN_OPTIONS=(
     "flatpak-apps;;"
+    "hostname;;"
     "old-refs;;"
 )
 _PLUGIN_HIDDEN="true"
@@ -56,30 +57,6 @@ function update_status() {
     else
         echo "$status"
         echo "$status" > $migrate_status_file
-    fi
-}
-
-function migrate_old_refs() {
-    current_boot="$(rpm-ostree status | grep "*" | cut -d "*" -f2)"
-    current_ref="$(echo $current_boot | cut -d ":" -f2)"
-    current_remote="$(echo $current_boot | cut -d ":" -f1 | cut -d " " -f2)"
-    current_version="$(get_property /etc/os-release VERSION)"
-
-    ref_to_migrate_to=""
-
-    case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2)" in
-        "sodalite/f36/x86_64/base:36-22.15")
-            ref_to_migrate_to="sodalite/stable/x86_64/desktop"
-            ;;
-        "sodalite/f36/x86_64/base:36-22.15")
-            ref_to_migrate_to="sodalite/f36/x86_64/desktop"
-            ;;
-    esac
-
-    if [[ -n $ref_to_migrate_to ]]; then
-        update_status "Rebasing to '$ref_to_migrate_to'..."
-        rpm-ostree cancel
-        rpm-ostree rebase $ref_to_migrate_to
     fi
 }
 
@@ -173,6 +150,40 @@ function migrate_flatpak_apps() {
     fi
 }
 
+function migrate_hostname() {
+    current_hostname=$(hostnamectl hostname)
+
+    if [[ $current_hostname == "fedora" ]]; then
+        new_hostname="sodalite-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-6} | head -n 1)"
+        update_status "Setting hostname to '$new_hostname'..."
+        hostnamectl hostname "$new_hostname"
+    fi
+}
+
+function migrate_old_refs() {
+    current_boot="$(rpm-ostree status | grep "*" | cut -d "*" -f2)"
+    current_ref="$(echo $current_boot | cut -d ":" -f2)"
+    current_remote="$(echo $current_boot | cut -d ":" -f1 | cut -d " " -f2)"
+    current_version="$(get_property /etc/os-release VERSION)"
+
+    ref_to_migrate_to=""
+
+    case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2)" in
+        "sodalite/f36/x86_64/base:36-22.15")
+            ref_to_migrate_to="sodalite/stable/x86_64/desktop"
+            ;;
+        "sodalite/f36/x86_64/base:36-22.15")
+            ref_to_migrate_to="sodalite/f36/x86_64/desktop"
+            ;;
+    esac
+
+    if [[ -n $ref_to_migrate_to ]]; then
+        update_status "Rebasing to '$ref_to_migrate_to'..."
+        rpm-ostree cancel
+        rpm-ostree rebase $ref_to_migrate_to
+    fi
+}
+
 function main() {
     pid="$(set_pidfile)"
     core="$(get_core)"
@@ -183,14 +194,21 @@ function main() {
         migrate_flatpak_apps
     fi
 
+    if [[ $hostname == "true" ]]; then
+        has_run="true"
+        migrate_hostname
+    fi
+
     if [[ $old_refs == "true" ]]; then
         has_run="true"
         migrate_old_refs
     fi
 
     if [[ $has_run == "false" ]]; then
-        migrate_flatpak_apps
+        # NOTE: Order by intensive-ness
+        migrate_hostname
         migrate_old_refs
+        migrate_flatpak_apps
     fi
 
     update_status
