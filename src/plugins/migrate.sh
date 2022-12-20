@@ -155,12 +155,15 @@ function migrate_flatpak_apps() {
                 [[ $install_success == "true" ]] && echo "$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
             fi
         else
+            uninstall_success="false"
             if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "true" ]]; then
                 update_status "Uninstalling app '$app_id'..."
                 flatpak uninstall --assumeyes --force-remove --noninteractive $app_id
-                [[ $? == 0 ]] && sed -i /"$app_core:$app_repo:$app_id:$app_branch"/d $_installed_apps_file
+                [[ $? == 0 ]] && uninstall_success="true"
                 [[ $run_flatpak_uninstall_unused == "false" ]] && run_flatpak_uninstall_unused="true"
             fi
+
+            [[ $uninstall_success == "true" ]] && sed -i /"$app_core:$app_repo:$app_id:$app_branch"/d $_installed_apps_file
         fi
     done
 
