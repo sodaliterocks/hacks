@@ -204,6 +204,9 @@ function migrate_old_refs() {
         "sodalite/next/x86_64/base:38-22.15")
             ref_to_migrate_to="sodalite/next/x86_64/desktop"
             ;;
+        "sodalite/devel/x86_64/base:36-22.14")
+            ref_to_migrate_to="sodalite/devel/x86_64/desktop"
+            ;;
     esac
 
     if [[ -n $ref_to_migrate_to ]]; then
