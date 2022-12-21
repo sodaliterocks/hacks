@@ -123,27 +123,30 @@ function migrate_flatpak_apps() {
         app_branch="$(echo "$app" | awk -F':' '{print $4}')"
 
         if [[ "$app_core" == "$core" ]]; then
-            if [[ $(grep -Fx "$core::$app_core:$app_repo:$app_id:$app_branch" "$_installed_apps_file") == "" ]]; then
-                update_status "Installing app '$app_id'..."
-
+            if [[ $(grep -Fx "$core:+:$app_core:$app_repo:$app_id:$app_branch" "$_installed_apps_file") == "" ]]; then
                 install_success="true"
                 if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "false" ]]; then
+                    update_status "Installing app '$app_id'..."
+
                     install_flatpak_app "$app_repo" "$app_id" "$app_branch"
                     [[ $? != 0 ]] && install_success="false"
                 fi
 
-                [[ $install_success == "true" ]] && echo "$core::$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
+                [[ $install_success == "true" ]] && echo "$core:+:$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
             fi
         else
-            uninstall_success="false"
-            if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "true" ]]; then
-                update_status "Uninstalling app '$app_id'..."
-                flatpak uninstall --assumeyes --force-remove --noninteractive $app_id
-                [[ $? == 0 ]] && uninstall_success="true"
-                [[ $run_flatpak_uninstall_unused == "false" ]] && run_flatpak_uninstall_unused="true"
-            fi
+            if [[ $(grep -Fx "$core:-:$app_core:$app_repo:$app_id:$app_branch" "$_installed_apps_file") == "" ]]; then
+                uninstall_success="false"
+                if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "true" ]]; then
+                    update_status "Uninstalling app '$app_id'..."
 
-            [[ $uninstall_success == "true" ]] && sed -i /"$core::$app_core:$app_repo:$app_id:$app_branch"/d $_installed_apps_file
+                    flatpak uninstall --assumeyes --force-remove --noninteractive $app_id
+                    [[ $? == 0 ]] && uninstall_success="true"
+                    [[ $run_flatpak_uninstall_unused == "false" ]] && run_flatpak_uninstall_unused="true"
+                fi
+
+                [[ $uninstall_success == "true" ]] && echo "$core:-:$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
+            fi
         fi
     done
 
