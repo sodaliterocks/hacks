@@ -195,11 +195,14 @@ function migrate_old_refs() {
     ref_to_migrate_to=""
 
     case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2)" in
-        "sodalite/f36/x86_64/base:36-22.15")
+        "sodalite/stable/x86_64/base:36-22.15")
             ref_to_migrate_to="sodalite/stable/x86_64/desktop"
             ;;
         "sodalite/f36/x86_64/base:36-22.15")
             ref_to_migrate_to="sodalite/f36/x86_64/desktop"
+            ;;
+        "sodalite/next/x86_64/base:38-22.15")
+            ref_to_migrate_to="sodalite/next/x86_64/desktop"
             ;;
     esac
 
