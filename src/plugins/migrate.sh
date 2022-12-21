@@ -123,7 +123,7 @@ function migrate_flatpak_apps() {
         app_branch="$(echo "$app" | awk -F':' '{print $4}')"
 
         if [[ "$app_core" == "$core" ]]; then
-            if [[ $(grep -Fx "$app_core:$app_repo:$app_id:$app_branch" "$_installed_apps_file") == "" ]]; then
+            if [[ $(grep -Fx "$core::$app_core:$app_repo:$app_id:$app_branch" "$_installed_apps_file") == "" ]]; then
                 update_status "Installing app '$app_id'..."
 
                 install_success="true"
@@ -132,7 +132,7 @@ function migrate_flatpak_apps() {
                     [[ $? != 0 ]] && install_success="false"
                 fi
 
-                [[ $install_success == "true" ]] && echo "$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
+                [[ $install_success == "true" ]] && echo "$core::$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
             fi
         else
             uninstall_success="false"
@@ -143,7 +143,7 @@ function migrate_flatpak_apps() {
                 [[ $run_flatpak_uninstall_unused == "false" ]] && run_flatpak_uninstall_unused="true"
             fi
 
-            [[ $uninstall_success == "true" ]] && sed -i /"$app_core:$app_repo:$app_id:$app_branch"/d $_installed_apps_file
+            [[ $uninstall_success == "true" ]] && sed -i /"$core::$app_core:$app_repo:$app_id:$app_branch"/d $_installed_apps_file
         fi
     done
 
