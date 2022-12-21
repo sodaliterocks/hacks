@@ -5,6 +5,7 @@ _PLUGIN_DESCRIPTION=""
 _PLUGIN_OPTIONS=(
     "flatpak-apps;;"
     "hostname;;"
+    "locale;;"
     "old-refs;;"
 )
 _PLUGIN_HIDDEN="true"
@@ -82,6 +83,7 @@ function migrate_flatpak_apps() {
         fi
     fi
 
+    # TODO: Migrate GNOME apps to use Flathub?
     apps=(
         "gnome:fedora:org.gnome.Calculator"
         "gnome:fedora:org.gnome.Calendar"
@@ -160,6 +162,29 @@ function migrate_hostname() {
     fi
 }
 
+function migrate_locale() {
+    # Pantheon has no built-in way to set locales properly, so we'll rely on
+    # what localectl is set to. Unfortunately, this will unintentionally clobber
+    # settings manually set by the user.
+    if [[ $(get_core) == "pantheon" ]]; then
+        system_locale="$(localectl status | grep "System Locale:" | cut -d "=" -f2)"
+
+        if [[ -d /var/lib/AccountsService/users ]]; then
+            for user_file in /var/lib/AccountsService/users/*; do
+                user="$(basename $user_file)"
+                passwd_ent="$(getent passwd $user)"
+
+                if [[ -n $passwd_ent ]]; then
+                    update_status "Setting locale for '$user' to '$system_locale'..."
+
+                    set_property "$user_file" Language "$system_locale"
+                    su -c "gsettings set org.gnome.system.locale region '$system_locale'" $user
+                fi
+            done
+        fi
+    fi
+}
+
 function migrate_old_refs() {
     current_boot="$(rpm-ostree status | grep "*" | cut -d "*" -f2)"
     current_ref="$(echo $current_boot | cut -d ":" -f2)"
@@ -185,9 +210,17 @@ function migrate_old_refs() {
 }
 
 function main() {
+    [[ -n $(get_pidfile) ]] && die "Already running"
+
     pid="$(set_pidfile)"
     core="$(get_core)"
     has_run="false"
+
+    if [[ ! -n $INVOCATION_ID ]]; then
+        if [[ $(get_answer "Not running from systemd. Are you sure you want to run manually?") == "n" ]]; then
+            exit
+        fi
+    fi
 
     if [[ $flatpak_apps == "true" ]]; then
         has_run="true"
@@ -199,14 +232,20 @@ function main() {
         migrate_hostname
     fi
 
+    if [[ $locale == "true" ]]; then
+        has_run="true"
+        migrate_locale
+    fi
+
     if [[ $old_refs == "true" ]]; then
         has_run="true"
         migrate_old_refs
     fi
 
     if [[ $has_run == "false" ]]; then
-        # NOTE: Order by intensive-ness
+        # NOTE: Order by intensive-ness (least intensive first)
         migrate_hostname
+        migrate_locale
         migrate_old_refs
         migrate_flatpak_apps
     fi

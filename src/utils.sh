@@ -2,14 +2,7 @@
 
 _pidfile_dir="/var/run/sodalite-hacks"
 
-function get_confdir() {
-    confdir="/etc/sodalite"
-    [[ ! -d $confdir ]] && mkdir -p $confdir
-    echo $confdir
-}
-
 function del_pidfile() {
-    pid="$$"
     pidfile=""
 
     if [[ -n "$plugin" ]]; then
@@ -22,8 +15,6 @@ function del_pidfile() {
 
     [[ "$(cat $_pidfile_dir/$pidfile)" == $pid ]] && rm -f "$_pidfile_dir/$pidfile"
     [[ -z "$(ls -A $_pidfile_dir)" ]] && rm -fr "$_pidfile_dir"
-
-    echo "$pid"
 }
 
 function del_property() {
@@ -58,9 +49,38 @@ function get_answer() {
     done
 }
 
+function get_confdir() {
+    confdir="/etc/sodalite"
+    [[ ! -d $confdir ]] && mkdir -p $confdir
+    echo $confdir
+}
+
 function get_core() {
     if [[ -f "/usr/lib/sodalite-core" ]]; then
         echo "$(cat /usr/lib/sodalite-core)"
+    else
+        echo "pantheon"
+    fi
+}
+
+function get_pidfile() {
+    pidfile=""
+
+    if [[ -n "$plugin" ]]; then
+        pidfile="$plugin"
+    else
+        pidfile="$1"
+    fi
+
+    pidfile="$pidfile.pid"
+
+    if [[ -f "$_pidfile_dir/$pidfile" ]]; then
+        pid="$(cat $_pidfile_dir/$pidfile)"
+        if ps -p $pid > /dev/null; then
+            echo "$pid"
+        else
+            del_pidfile
+        fi
     fi
 }
 
