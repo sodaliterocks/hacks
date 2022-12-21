@@ -104,6 +104,7 @@ function migrate_flatpak_apps() {
         "gnome:fedora:org.gnome.eog"
         "gnome:fedora:org.gnome.font-viewer"
         "gnome:fedora:org.gnome.gedit"
+        "pantheon:appcenter:io.elementary.Platform:7.1"
         "pantheon:appcenter:org.gnome.Evince:stable"
         "pantheon:appcenter:org.gnome.FileRoller:stable"
         "pantheon:appcenter:io.elementary.calculator:stable"
