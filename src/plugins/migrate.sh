@@ -11,7 +11,7 @@ _PLUGIN_OPTIONS=(
 _PLUGIN_HIDDEN="true"
 _PLUGIN_ROOT="true"
 
-_installed_apps_file="$(get_confdir)/unattended-installed-apps"
+_installed_apps_file="$(get_vardir)/unattended-installed-apps"
 
 function install_flatpak_app() {
     repo=$1

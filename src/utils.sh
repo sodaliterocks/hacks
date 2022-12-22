@@ -49,12 +49,6 @@ function get_answer() {
     done
 }
 
-function get_confdir() {
-    confdir="/etc/sodalite"
-    [[ ! -d $confdir ]] && mkdir -p $confdir
-    echo $confdir
-}
-
 function get_core() {
     if [[ -f "/usr/lib/sodalite-core" ]]; then
         echo "$(cat /usr/lib/sodalite-core)"
@@ -91,6 +85,12 @@ function get_property() {
     if [[ -f $file ]]; then
         echo $(grep -oP '(?<=^'"$property"'=).+' $file | tr -d '"')
     fi
+}
+
+function get_vardir() {
+    vardir="/var/lib/sodalite"
+    [[ ! -d $vardir ]] && mkdir -p $vardir
+    echo $vardir
 }
 
 function parse_plugin_option() {
