@@ -217,7 +217,7 @@ function migrate_old_refs() {
     if [[ -n $ref_to_migrate_to ]]; then
         update_status "Rebasing to '$ref_to_migrate_to'..."
         rpm-ostree cancel
-        rpm-ostree rebase $ref_to_migrate_to
+        rpm-ostree rebase "$current_remote:$ref_to_migrate_to"
     fi
 }
 
