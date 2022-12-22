@@ -108,10 +108,12 @@ function migrate_flatpak_apps() {
         "pantheon:appcenter:org.gnome.Evince:stable"
         "pantheon:appcenter:org.gnome.FileRoller:stable"
         "pantheon:appcenter:io.elementary.calculator:stable"
+        "pantheon:appcenter:io.elementary.calendar:stable"
         "pantheon:appcenter:io.elementary.camera:stable"
         "pantheon:appcenter:io.elementary.capnet-assist:stable"
+        #"pantheon:appcenter:io.elementary.mail" # Not yet stable
         "pantheon:appcenter:io.elementary.screenshot:stable"
-        #"pantheon:appcenter:io.elementary.tasks:stable"
+        #"pantheon:appcenter:io.elementary.tasks:stable" # Broken?
         "pantheon:appcenter:io.elementary.videos:stable"
     )
 
