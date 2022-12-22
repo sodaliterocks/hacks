@@ -192,32 +192,45 @@ function migrate_locale() {
 }
 
 function migrate_old_refs() {
-    current_boot="$(rpm-ostree status | grep "*" | cut -d "*" -f2)"
-    current_ref="$(echo $current_boot | cut -d ":" -f2)"
-    current_remote="$(echo $current_boot | cut -d ":" -f1 | cut -d " " -f2)"
-    current_version="$(get_property /etc/os-release VERSION)"
+    current_boot=""
+    current_boot_indicator=""
+    rost_status="$(rpm-ostree status)"
 
-    ref_to_migrate_to=""
+    if [[ $(echo $rost_status | grep "● ") != "" ]]; then
+        current_boot_indicator="●"
+    elif [[ $(echo $rost_status | grep "* ") != "" ]]; then
+        current_boot_indicator="*"
+    fi
 
-    case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2)" in
-        "sodalite/stable/x86_64/base:36-22.15")
-            ref_to_migrate_to="sodalite/stable/x86_64/desktop"
-            ;;
-        "sodalite/f36/x86_64/base:36-22.15")
-            ref_to_migrate_to="sodalite/f36/x86_64/desktop"
-            ;;
-        "sodalite/next/x86_64/base:38-22.15")
-            ref_to_migrate_to="sodalite/next/x86_64/desktop"
-            ;;
-        "sodalite/devel/x86_64/base:36-22.14")
-            ref_to_migrate_to="sodalite/devel/x86_64/desktop"
-            ;;
-    esac
+    current_boot="$(echo $rost_status | grep "$current_boot_indicator " | cut -d "$current_boot_indicator" -f2 | cut -d " " -f2)"
 
-    if [[ -n $ref_to_migrate_to ]]; then
-        update_status "Rebasing to '$ref_to_migrate_to'..."
-        rpm-ostree cancel
-        rpm-ostree rebase "$current_remote:$ref_to_migrate_to"
+    if [[ -n $current_boot ]]; then
+        current_ref="$(echo $current_boot | cut -d ":" -f2)"
+        current_remote="$(echo $current_boot | cut -d ":" -f1 | cut -d " " -f2)"
+        current_version="$(get_property /etc/os-release VERSION)"
+
+        ref_to_migrate_to=""
+
+        case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2)" in
+            "sodalite/stable/x86_64/base:36-22.15")
+                ref_to_migrate_to="sodalite/stable/x86_64/desktop"
+                ;;
+            "sodalite/f36/x86_64/base:36-22.15")
+                ref_to_migrate_to="sodalite/f36/x86_64/desktop"
+                ;;
+            "sodalite/next/x86_64/base:38-22.15")
+                ref_to_migrate_to="sodalite/next/x86_64/desktop"
+                ;;
+            "sodalite/devel/x86_64/base:36-22.14")
+                ref_to_migrate_to="sodalite/devel/x86_64/desktop"
+                ;;
+        esac
+
+        if [[ -n $ref_to_migrate_to ]]; then
+            update_status "Rebasing to '$ref_to_migrate_to'..."
+            rpm-ostree cancel
+            rpm-ostree rebase "$current_remote:$ref_to_migrate_to"
+        fi
     fi
 }
 
