@@ -214,7 +214,7 @@ function migrate_old_refs() {
 
         ref_to_migrate_to=""
 
-        case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2)" in
+        case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2 | cut -d "+" -f1)" in
             "sodalite/stable/x86_64/base:36-22.15")
                 ref_to_migrate_to="sodalite/stable/x86_64/desktop"
                 ;;
