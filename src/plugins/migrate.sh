@@ -147,7 +147,10 @@ function migrate_flatpak_apps() {
                     [[ $run_flatpak_uninstall_unused == "false" ]] && run_flatpak_uninstall_unused="true"
                 fi
 
-                [[ $uninstall_success == "true" ]] && echo "$core:-:$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
+                if [[ $uninstall_success == "true" ]]; then
+                    echo "$core:-:$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
+                    sed -i /"$core:+:$app_core:$app_repo:$app_id:$app_branch"/d $_installed_apps_file
+                fi
             fi
         fi
     done
