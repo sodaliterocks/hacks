@@ -84,6 +84,7 @@ function migrate_flatpak_apps() {
     fi
 
     # TODO: Migrate GNOME apps to use Flathub?
+    # TODO: Fix Evince and File Roller being uninstalled on GNOME
     apps=(
         "gnome:fedora:org.gnome.Calculator"
         "gnome:fedora:org.gnome.Calendar"
@@ -149,7 +150,7 @@ function migrate_flatpak_apps() {
 
                 if [[ $uninstall_success == "true" ]]; then
                     echo "$core:-:$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
-                    sed -i /"$core:+:$app_core:$app_repo:$app_id:$app_branch"/d $_installed_apps_file
+                    sed -i /"$app_core:+:$app_core:$app_repo:$app_id:$app_branch"/d $_installed_apps_file
                 fi
             fi
         fi
