@@ -121,8 +121,11 @@ function migrate_flatpak_apps() {
         "pantheon:appcenter:io.elementary.videos:stable"
     )
 
-    for app in "${apps[@]}"
-    do
+    apps_no_install=(
+        "gnome:fedora:org.gnome.gedit"
+    )
+
+    for app in "${apps[@]}"; do
         app_core="$(echo "$app" | awk -F':' '{print $1}')"
         app_repo="$(echo "$app" | awk -F':' '{print $2}')"
         app_id="$(echo "$app" | awk -F':' '{print $3}')"
@@ -131,24 +134,33 @@ function migrate_flatpak_apps() {
 
         if [[ "$app_core" == "$core" ]]; then
             install="false"
+            skip_install="false"
 
-            if [[ $(grep -Fx "+:$app_string" "$_installed_apps_file") == "" ]]; then
-                debug "Is '$core'. Installing '$app_string'"
-                install="true"
-            elif [[ $(grep -Fx -- "-:$app_string" "$_installed_apps_file") != "" ]]; then
-                debug "Is '$core'. Installing '$app_string'"
-                install="true"
-            else
-                debug "Is '$core'. Already installed '$app_string'"
-            fi
+            for app_no_install in "${apps_no_install[@]}"; do
+                if [[ "$app" == "$app_no_install" ]]; then
+                    skip_install="true"
+                fi
+            done
 
-            if [[ $install == "true" ]]; then
-                update_status "Installing app '$app_id'..."
-                install_flatpak_app "$app_repo" "$app_id" "$app_branch"
+            if [[ $skip_install == "false" ]]; then
+                if [[ $(grep -Fx "+:$app_string" "$_installed_apps_file") == "" ]]; then
+                    debug "Is '$core'. Installing '$app_string'"
+                    install="true"
+                elif [[ $(grep -Fx -- "-:$app_string" "$_installed_apps_file") != "" ]]; then
+                    debug "Is '$core'. Installing '$app_string'"
+                    install="true"
+                else
+                    debug "Is '$core'. Already installed '$app_string'"
+                fi
 
-                if [[ $? == 0 ]]; then
-                    sed -i /"-:$app_string"/d $_installed_apps_file
-                    echo "+:$app_string" >> $_installed_apps_file
+                if [[ $install == "true" ]]; then
+                    update_status "Installing app '$app_id'..."
+                    install_flatpak_app "$app_repo" "$app_id" "$app_branch"
+
+                    if [[ $? == 0 ]]; then
+                        sed -i /"-:$app_string"/d $_installed_apps_file
+                        echo "+:$app_string" >> $_installed_apps_file
+                    fi
                 fi
             fi
         else

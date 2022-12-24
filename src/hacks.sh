@@ -37,16 +37,16 @@ function print_help() {
     for f in $plugins_dir/*.sh; do
         _PLUGIN_DESCRIPTION="(No description)"
         _PLUGIN_HIDDEN=""
-        
+
         source_plugin "$f"
-        
+
         if [[ $? -eq 0 ]]; then
             if [[ $_PLUGIN_HIDDEN != "true" ]]; then
                 say "  $(basename "$f" | cut -d. -f1)\t$_PLUGIN_DESCRIPTION"
             fi
         fi
     done
-    
+
     say "\nOptions:"
     say " -h, --help\tShow help (invoking with no [command] lists all available plugins)"
 }
