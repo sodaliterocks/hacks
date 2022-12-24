@@ -170,7 +170,7 @@ function migrate_flatpak_apps() {
                 update_status "Uninstalling app '$app_id'..."
                 flatpak uninstall --assumeyes --force-remove --noninteractive $app_id
 
-                if [[ $? == 0 ]]; then
+                if [[ $? == 0 ]] || [[ $? == 1 ]]; then
                     sed -i /"+:$app_string"/d $_installed_apps_file
                     echo "-:$app_string" >> $_installed_apps_file
                 fi
