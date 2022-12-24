@@ -124,34 +124,52 @@ function migrate_flatpak_apps() {
         app_repo="$(echo "$app" | awk -F':' '{print $2}')"
         app_id="$(echo "$app" | awk -F':' '{print $3}')"
         app_branch="$(echo "$app" | awk -F':' '{print $4}')"
+        app_string="$app_core:$app_repo:$app_id:$app_branch"
 
         if [[ "$app_core" == "$core" ]]; then
-            if [[ $(grep -Fx "$core:+:$app_core:$app_repo:$app_id:$app_branch" "$_installed_apps_file") == "" ]]; then
-                install_success="true"
-                if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "false" ]]; then
-                    update_status "Installing app '$app_id'..."
+            install="false"
 
-                    install_flatpak_app "$app_repo" "$app_id" "$app_branch"
-                    [[ $? != 0 ]] && install_success="false"
+            if [[ $(grep -Fx "+:$app_string" "$_installed_apps_file") == "" ]]; then
+                debug "Is '$core'. Installing '$app_string'"
+                install="true"
+            else
+                debug "Is '$core'. Already installed '$app_string'"
+            fi
+
+            if [[ $install == "true" ]]; then
+                update_status "Installing app '$app_id'..."
+                install_flatpak_app "$app_repo" "$app_id" "$app_branch"
+
+                if [[ $? == 0 ]]; then
+                    sed -i /"-:$app_string"/d $_installed_apps_file
+                    echo "+:$app_string" >> $_installed_apps_file
                 fi
-
-                [[ $install_success == "true" ]] && echo "$core:+:$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
             fi
         else
-            if [[ $(grep -Fx "$core:-:$app_core:$app_repo:$app_id:$app_branch" "$_installed_apps_file") == "" ]]; then
-                uninstall_success="false"
+            uninstall="false"
+
+            if [[ $(grep -Fx "+:$app_string" "$_installed_apps_file") != "" ]]; then
+                debug "Not '$core'. Already installed '$app_string'"
+                uninstall="true"
+            elif [[ $(grep -Fx -- "-:$app_string" "$_installed_apps_file") != "" ]]; then
+                debug "Not '$core'. Already uninstalled '$app_string'"
+            else
                 if [[ $(is_flatpak_app_installed "$app_id" "$app_repo") == "true" ]]; then
-                    update_status "Uninstalling app '$app_id'..."
+                    debug "Not '$core'. Uninstalling '$app_string'"
+                    uninstall="true"
+                fi
+            fi
 
-                    flatpak uninstall --assumeyes --force-remove --noninteractive $app_id
-                    [[ $? == 0 ]] && uninstall_success="true"
-                    [[ $run_flatpak_uninstall_unused == "false" ]] && run_flatpak_uninstall_unused="true"
+            if [[ $uninstall == "true" ]]; then
+                update_status "Uninstalling app '$app_id'..."
+                flatpak uninstall --assumeyes --force-remove --noninteractive $app_id
+
+                if [[ $? == 0 ]]; then
+                    sed -i /"+:$app_string"/d $_installed_apps_file
+                    echo "-:$app_string" >> $_installed_apps_file
                 fi
 
-                if [[ $uninstall_success == "true" ]]; then
-                    echo "$core:-:$app_core:$app_repo:$app_id:$app_branch" >> $_installed_apps_file
-                    sed -i /"$app_core:+:$app_core:$app_repo:$app_id:$app_branch"/d $_installed_apps_file
-                fi
+                [[ $run_flatpak_uninstall_unused == "false" ]] && run_flatpak_uninstall_unused="true"
             fi
         fi
     done
