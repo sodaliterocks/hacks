@@ -132,6 +132,9 @@ function migrate_flatpak_apps() {
             if [[ $(grep -Fx "+:$app_string" "$_installed_apps_file") == "" ]]; then
                 debug "Is '$core'. Installing '$app_string'"
                 install="true"
+            elif [[ $(grep -Fx -- "-:$app_string" "$_installed_apps_file") != "" ]]; then
+                debug "Is '$core'. Installing '$app_string'"
+                install="true"
             else
                 debug "Is '$core'. Already installed '$app_string'"
             fi
