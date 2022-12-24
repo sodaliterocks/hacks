@@ -30,4 +30,6 @@ function main() {
     fi
 
     python -m http.server --bind 0.0.0.0 --directory $directory $port
+
+    [[ $? != 0 ]] && die "Unable to start server"
 }
