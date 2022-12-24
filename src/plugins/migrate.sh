@@ -7,6 +7,7 @@ _PLUGIN_OPTIONS=(
     "hostname;;"
     "locale;;"
     "old-refs;;"
+    "force;f;"
 )
 _PLUGIN_HIDDEN="true"
 _PLUGIN_ROOT="true"
@@ -63,8 +64,11 @@ function update_status() {
 
 function migrate_flatpak_apps() {
     run_flatpak_uninstall_unused="false"
-
     touch "$_installed_apps_file"
+
+    if [[ $force == "true" ]]; then
+        echo "" > "$_installed_apps_file"
+    fi
 
     if [[ $core == "pantheon" ]]; then
         if [[ $(is_flatpak_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
@@ -84,7 +88,6 @@ function migrate_flatpak_apps() {
     fi
 
     # TODO: Migrate GNOME apps to use Flathub?
-    # TODO: Fix Evince and File Roller being uninstalled on GNOME
     apps=(
         "gnome:fedora:org.gnome.Calculator"
         "gnome:fedora:org.gnome.Calendar"
@@ -186,7 +189,7 @@ function migrate_flatpak_apps() {
 function migrate_hostname() {
     current_hostname=$(hostnamectl hostname)
 
-    if [[ $current_hostname == "fedora" ]]; then
+    if [[ $force == "true" ]] || [[ $current_hostname == "fedora" ]]; then
         new_hostname="sodalite-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-6} | head -n 1)"
         update_status "Setting hostname to '$new_hostname'..."
         hostnamectl hostname "$new_hostname"
@@ -194,6 +197,8 @@ function migrate_hostname() {
 }
 
 function migrate_locale() {
+    [[ $force == "true" ]] && die "--force cannot be used with --locale"
+
     # Pantheon has no built-in way to set locales properly, so we'll rely on
     # what localectl is set to. Unfortunately, this will unintentionally clobber
     # settings manually set by the user.
@@ -217,6 +222,8 @@ function migrate_locale() {
 }
 
 function migrate_old_refs() {
+    [[ $force == "true" ]] && die "--force cannot be used with --old-refs"
+
     current_boot=""
     current_boot_indicator=""
     rost_status="$(rpm-ostree status)"
