@@ -3,11 +3,13 @@
 _PLUGIN_TITLE="Sodalite migration tools"
 _PLUGIN_DESCRIPTION=""
 _PLUGIN_OPTIONS=(
+    "all;a;"
     "flatpak-apps;;"
     "hostname;;"
     "locale;;"
     "old-refs;;"
     "force;f;"
+    "no-internet;;"
 )
 _PLUGIN_HIDDEN="true"
 _PLUGIN_ROOT="true"
@@ -224,9 +226,7 @@ function migrate_locale() {
 
                 if [[ -n $passwd_ent ]]; then
                     update_status "Setting locale for '$user' to '$system_locale'..."
-
                     set_property "$user_file" Language "$system_locale"
-                    su -c "gsettings set org.gnome.system.locale region '$system_locale'" $user
                 fi
             done
         fi
@@ -291,6 +291,8 @@ function main() {
         fi
     fi
 
+    [[ $all != "true" && $no_internet == "true" ]] && die "--no-internet cannot be used without --all"
+
     if [[ $flatpak_apps == "true" ]]; then
         has_run="true"
         migrate_flatpak_apps
@@ -311,12 +313,22 @@ function main() {
         migrate_old_refs
     fi
 
-    if [[ $has_run == "false" ]]; then
-        # NOTE: Order by intensive-ness (least intensive first)
+    if [[ $all == "true" ]]; then
+        [[ $force == "true" ]] && die "--force cannot be used with --all"
+
+        has_run="true"
+
         migrate_hostname
         migrate_locale
-        migrate_old_refs
-        migrate_flatpak_apps
+
+        if [[ $no_internet != "true" ]]; then
+            migrate_old_refs
+            migrate_flatpak_apps
+        fi
+    fi
+
+    if [[ $has_run == "false" ]]; then
+        die "No option specified (see --help)"
     fi
 
     update_status

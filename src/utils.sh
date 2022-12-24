@@ -93,6 +93,11 @@ function get_vardir() {
     echo $vardir
 }
 
+function parse_file_uri() {
+    file="$1"
+    echo "$1" | sed "s/file:\/\///g" | sed "s/'//g"
+}
+
 function parse_plugin_option() {
     IFS=";" read -r -a option <<< "${@}"
 
