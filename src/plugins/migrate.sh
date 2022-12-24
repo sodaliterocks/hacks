@@ -6,8 +6,8 @@ _PLUGIN_OPTIONS=(
     "all;a;"
     "flatpak-apps;;"
     "hostname;;"
-    "locale;;"
     "old-refs;;"
+    "users;;"
     "force;f;"
     "no-internet;;"
 )
@@ -210,29 +210,6 @@ function migrate_hostname() {
     fi
 }
 
-function migrate_locale() {
-    [[ $force == "true" ]] && die "--force cannot be used with --locale"
-
-    # Pantheon has no built-in way to set locales properly, so we'll rely on
-    # what localectl is set to. Unfortunately, this will unintentionally clobber
-    # settings manually set by the user.
-    if [[ $(get_core) == "pantheon" ]]; then
-        system_locale="$(localectl status | grep "System Locale:" | cut -d "=" -f2)"
-
-        if [[ -d /var/lib/AccountsService/users ]]; then
-            for user_file in /var/lib/AccountsService/users/*; do
-                user="$(basename $user_file)"
-                passwd_ent="$(getent passwd $user)"
-
-                if [[ -n $passwd_ent ]]; then
-                    update_status "Setting locale for '$user' to '$system_locale'..."
-                    set_property "$user_file" Language "$system_locale"
-                fi
-            done
-        fi
-    fi
-}
-
 function migrate_old_refs() {
     [[ $force == "true" ]] && die "--force cannot be used with --old-refs"
 
@@ -278,6 +255,40 @@ function migrate_old_refs() {
     fi
 }
 
+function migrate_users() {
+    [[ $force == "true" ]] && die "--force cannot be used with --users"
+
+    skel_files=(
+        ".bashrc"
+        ".config/touchegg/touchegg.conf"
+    )
+    system_locale="$(localectl status | grep "System Locale:" | cut -d "=" -f2)"
+
+    if [[ -d /var/lib/AccountsService/users ]]; then
+        for user_file in /var/lib/AccountsService/users/*; do
+            user="$(basename $user_file)"
+            passwd_ent="$(getent passwd $user)"
+
+            if [[ -n $passwd_ent ]]; then
+                user_home="$(echo $passwd_ent | cut -d ":" -f6)"
+
+                if [[ $(get_core) == "pantheon" ]]; then
+                    update_status "Setting locale for '$user' to '$system_locale'..."
+                    set_property "$user_file" Language "$system_locale"
+                fi
+
+                update_status "Installing skel for '$user'..."
+                for skel_file in "${skel_files[@]}"; do
+                    if [[ ! -f "$user_home/$skel_file" ]]; then
+                        touchp "$user_home/$skel_file"
+                        cp -f "/etc/skel/$skel_file" "$user_home/$skel_file"
+                    fi
+                done
+            fi
+        done
+    fi
+}
+
 function main() {
     [[ -n $(get_pidfile) ]] && die "Already running"
 
@@ -313,6 +324,11 @@ function main() {
         migrate_old_refs
     fi
 
+    if [[ $users == "true" ]]; then
+        has_run="true"
+        migrate_users
+    fi
+
     if [[ $all == "true" ]]; then
         [[ $force == "true" ]] && die "--force cannot be used with --all"
 
@@ -320,6 +336,7 @@ function main() {
 
         migrate_hostname
         migrate_locale
+        migrate_users
 
         if [[ $no_internet != "true" ]]; then
             migrate_old_refs

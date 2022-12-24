@@ -162,9 +162,13 @@ function set_property() {
 
 function source_plugin() {
     plugin_file=$1
-    
+
     export -f die
     export -f say
-    
+
     . $plugin_file > /dev/null 2>&1
+}
+
+function touchp() {
+    mkdir -p "$(dirname "$1")/" && touch "$1"
 }
