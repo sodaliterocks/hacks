@@ -7,7 +7,7 @@ _PLUGIN_OPTIONS=(
     "flatpak-apps;;"
     "hostname;;"
     "old-refs;;"
-    "users;;"
+    "user-data;;"
     "force;f;"
     "no-internet;;"
 )
@@ -233,13 +233,13 @@ function migrate_old_refs() {
         ref_to_migrate_to=""
 
         case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2 | cut -d "+" -f1)" in
-            "sodalite/stable/x86_64/base:36-22.15")
+            "sodalite/stable/x86_64/base:36-23.0")
                 ref_to_migrate_to="sodalite/stable/x86_64/desktop"
                 ;;
-            "sodalite/f36/x86_64/base:36-22.15")
+            "sodalite/f36/x86_64/base:36-23.0")
                 ref_to_migrate_to="sodalite/f36/x86_64/desktop"
                 ;;
-            "sodalite/next/x86_64/base:38-22.15")
+            "sodalite/next/x86_64/base:38-23.0")
                 ref_to_migrate_to="sodalite/next/x86_64/desktop"
                 ;;
             "sodalite/devel/x86_64/base:36-22.14")
@@ -255,7 +255,7 @@ function migrate_old_refs() {
     fi
 }
 
-function migrate_users() {
+function migrate_user_data() {
     [[ $force == "true" ]] && die "--force cannot be used with --users"
 
     skel_files=(
@@ -314,19 +314,14 @@ function main() {
         migrate_hostname
     fi
 
-    if [[ $locale == "true" ]]; then
-        has_run="true"
-        migrate_locale
-    fi
-
     if [[ $old_refs == "true" ]]; then
         has_run="true"
         migrate_old_refs
     fi
 
-    if [[ $users == "true" ]]; then
+    if [[ $user_data == "true" ]]; then
         has_run="true"
-        migrate_users
+        migrate_user_data
     fi
 
     if [[ $all == "true" ]]; then
@@ -336,7 +331,7 @@ function main() {
 
         migrate_hostname
         migrate_locale
-        migrate_users
+        migrate_user_data
 
         if [[ $no_internet != "true" ]]; then
             migrate_old_refs
