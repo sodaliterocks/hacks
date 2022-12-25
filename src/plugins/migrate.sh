@@ -72,20 +72,6 @@ function migrate_flatpak_apps() {
         echo "" > "$_installed_apps_file"
     fi
 
-    if [[ $core == "gnome" ]]; then
-        # HACK: Something is missing on the GNOME core to cause "error: Cannot
-        #       autolaunch D-Bus without X11 $DISPLAY" error, so we'll just
-        #       wait for this variable to be set
-
-        while true; do
-            if [[ -n "$DISPLAY" ]]; then
-                break
-            else
-                update_status "Waiting for X11..."
-            fi
-        done
-    fi
-
     if [[ $core == "pantheon" ]]; then
         if [[ $(is_flatpak_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
             update_status "Adding AppCenter remote..."
