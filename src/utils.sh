@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-_pidfile_dir="/var/run/sodalite-hacks"
+_pidfile_dir="/var/run/rocks.sodalite.hacks"
 
 function del_pidfile() {
     pidfile=""
@@ -109,7 +109,7 @@ function parse_plugin_option() {
 function rost_apply_live() {
     message=$1
     [[ -z $message ]] && message="Unable to apply changes live. Reboot required to process changes."
-    
+
     rpm-ostree ex apply-live --allow-replacement
 
     if [[ ! $? -eq 0 ]]; then
