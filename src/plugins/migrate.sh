@@ -74,7 +74,7 @@ function migrate_flatpak_apps() {
 
     if [[ $core == "pantheon" ]]; then
         if [[ $(is_flatpak_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
-            update_status "Adding AppCenter remote..."
+            update_status "Adding AppCenter Flatpak remote..."
             flatpak remote-add \
                 --if-not-exists \
                 --system \
@@ -86,6 +86,14 @@ function migrate_flatpak_apps() {
                 --if-not-exists \
                 --title="AppCenter" \
                 appcenter https://flatpak.elementary.io/repo/
+
+            if [[ $(is_flatpak_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
+                update_status "Adding Flathub Flatpak remote..."
+                flatpak remote-add \
+                    --if-not-exists \
+                    --system \
+                    flathub https://flathub.org/repo/flathub.flatpakrepo
+            fi
         fi
     fi
 
