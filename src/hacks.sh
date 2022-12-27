@@ -5,7 +5,7 @@ cmd=$@
 base_dir="$(dirname "$(realpath -s "$0")")"
 plugins_dir=""
 
-[[ ! -d "$base_dir/../.git" ]] && base_dir="/usr/libexec/sodalite-hacks"
+[[ ! -d "$base_dir/../.git" ]] && base_dir="/usr/libexec/rocks.sodalite.hacks"
 
 plugins_dir="$base_dir/plugins"
 . $base_dir/utils.sh
