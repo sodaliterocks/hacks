@@ -221,17 +221,17 @@ function migrate_hostname() {
 function migrate_old_refs() {
     [[ $force == "true" ]] && die "--force cannot be used with --old-refs"
 
-    current_boot=""
-    current_boot_indicator=""
-    rost_status="$(rpm-ostree status)"
+    set -f
 
-    if [[ $(echo $rost_status | grep "● ") != "" ]]; then
-        current_boot_indicator="●"
-    elif [[ $(echo $rost_status | grep "* ") != "" ]]; then
-        current_boot_indicator="*"
+    current_boot=""
+
+    if [[ $(rpm-ostree status | grep "● ") != "" ]]; then
+        current_boot="$(rpm-ostree status | grep "● " | cut -d "●" -f2)"
+    elif [[ $(rpm-ostree status | grep "* ") != "" ]]; then
+        current_boot="$(rpm-ostree status | grep "* " | cut -d "*" -f2)"
     fi
 
-    current_boot="$(echo $rost_status | grep "$current_boot_indicator " | cut -d "$current_boot_indicator" -f2 | cut -d " " -f2)"
+    echo $current_boot
 
     if [[ -n $current_boot ]]; then
         current_ref="$(echo $current_boot | cut -d ":" -f2)"
@@ -240,7 +240,7 @@ function migrate_old_refs() {
 
         ref_to_migrate_to=""
 
-        case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2 | cut -d "+" -f1)" in
+        case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2 | cut -d "+" -f1 | cut -d " " -f1)" in
             "sodalite/stable/x86_64/base:36-23.0")
                 ref_to_migrate_to="sodalite/stable/x86_64/desktop"
                 ;;
@@ -261,6 +261,8 @@ function migrate_old_refs() {
             rpm-ostree rebase "$current_remote:$ref_to_migrate_to"
         fi
     fi
+    
+    set +f
 }
 
 function migrate_user_data() {
