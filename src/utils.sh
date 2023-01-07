@@ -83,12 +83,22 @@ function get_pidfile() {
 }
 
 function get_property() {
-    file=$1
-    property=$2
+    file="$1"
+    property="$2"
 
     if [[ -f $file ]]; then
         echo $(grep -oP '(?<=^'"$property"'=).+' $file | tr -d '"')
     fi
+}
+
+function get_random_string() {
+    amount=$1
+
+    if ! [[ -n $amount ]]; then
+        amount=6
+    fi
+
+    eval "cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-$amount}| head -n 1"
 }
 
 function get_vardir() {
@@ -108,6 +118,17 @@ function parse_plugin_option() {
     _PLUGIN_OPTION_PARAM="${option[0]}"
     _PLUGIN_OPTION_SHORT="${option[1]}"
     _PLUGIN_OPTION_HELP="${option[2]}"
+}
+
+function repeat() {
+    string="$1"
+    amount=$2
+
+    if ! [[ -n $amount ]]; then
+        amount=20
+    fi
+
+    eval "for i in {1..$amount}; do echo -n "$1"; done"
 }
 
 function rost_apply_live() {
