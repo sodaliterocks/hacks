@@ -2,6 +2,10 @@
 
 _pidfile_dir="/var/run/rocks.sodalite.hacks"
 
+function check_prog() {
+    [[ ! $(command -v "$1") ]] && die "'$1' not installed"
+}
+
 function del_pidfile() {
     pidfile=""
 

@@ -56,6 +56,7 @@ function invoke_plugin() {
     plugin=$1
     options=${@:2}
     plugin_file=""
+    plugin_dir=""
 
     if [[ $plugin == "/"* ]] || [[ $plugin == "./"* ]]; then
         local_plugin_file="$plugin"
@@ -77,6 +78,7 @@ function invoke_plugin() {
     debug "Invoking executable '$plugin_file'"
 
     if [[ -f $plugin_file ]]; then
+        plugin_dir="$(dirname "$(realpath -s "$plugin_file")")"
         source_plugin $plugin_file
 
         if { [[ $options == "--help" ]] || [[ $options == "-h" ]]; }; then
