@@ -13,7 +13,9 @@ plugins_dir="$base_dir/plugins"
 
 function die() {
     message=$@
-    say "\033[1;31mError: $message\033[0m"
+    prefix="Error:"
+    [[ $message == "" ]] && prefix="Error!"
+    say "\033[1;31m$prefix $message\033[0m"
     exit 255
 }
 
