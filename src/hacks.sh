@@ -54,8 +54,18 @@ function print_help() {
 function invoke_plugin() {
     plugin=$1
     options=${@:2}
-    plugin_file="$plugins_dir/$plugin.sh"
-    
+    plugin_file=""
+
+    if [[ $plugin == "/"* ]]; then
+        if [[ -f $plugin ]]; then
+            plugin_file="$plugin"
+        else
+            die "'$plugin' does not exist"
+        fi
+    else
+        plugin_file="$plugins_dir/$plugin.sh"
+    fi
+
     debug "Invoking executable '$plugin_file'"
 
     if [[ -f $plugin_file ]]; then
@@ -64,38 +74,38 @@ function invoke_plugin() {
         if { [[ $options == "--help" ]] || [[ $options == "-h" ]]; }; then
             [[ -z $_PLUGIN_TITLE ]] && _PLUGIN_TITLE="$plugin"
             [[ -z $_PLUGIN_DESCRIPTION ]] && _PLUGIN_DESCRIPTION="(No description)"
-        
+
             say "$_PLUGIN_TITLE"
             say "  $_PLUGIN_DESCRIPTION"
             say "\nUsage:"
-            
+
             if [[ ! -z $_PLUGIN_OPTIONS ]]; then
                 if [[ $SODALITE_HACKS_OVERRIDE_USAGE_PREFIX == "" ]]; then
                     say "  $prog $plugin [options]"
                 else
                     say "  $SODALITE_HACKS_OVERRIDE_USAGE_PREFIX [options]"
                 fi
-                
+
                 say "\nOptions:"
-            
+
                 for i in "${_PLUGIN_OPTIONS[@]}"; do
                     parse_plugin_option ${i}
-                    
+
                     param="--$_PLUGIN_OPTION_PARAM"
-                    
+
                     if [[ ! -z $_PLUGIN_OPTION_SHORT ]]; then
                         param="-$_PLUGIN_OPTION_SHORT, $param"
                     fi
-                    
+
                     say "  $param\t$_PLUGIN_OPTION_HELP"
                 done
             else
                 say "  $prog $plugin"
             fi
-            
+
             exit 0
         fi
-        
+
         if [[ $_PLUGIN_ROOT == "true" && ! $(id -u) = 0 ]]; then
             die "Unauthorized (are you root?)"
         fi
@@ -103,7 +113,7 @@ function invoke_plugin() {
         if [[ ! -z $options ]]; then
             for i in "${_PLUGIN_OPTIONS[@]}"; do
                 parse_plugin_option ${i}
-                
+
                 debug "Found option --$_PLUGIN_OPTION_PARAM (-$_PLUGIN_OPTION_SHORT)"
 
                 if [[ $_PLUGIN_OPTION_PARAM == "" ]]; then
