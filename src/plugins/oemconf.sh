@@ -211,5 +211,3 @@ function get_hwinfo() {
         echo $value
     fi
 }
-
-[[ $is_invoked != "true" ]] && rocks.sodalite.hacks $0 $@

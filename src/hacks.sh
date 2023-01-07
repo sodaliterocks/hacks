@@ -57,8 +57,9 @@ function invoke_plugin() {
     options=${@:2}
     plugin_file=""
 
-    if [[ $plugin == "/"* ]]; then
+    if [[ $plugin == "/"* ]] || [[ $plugin == "./"* ]]; then
         local_plugin_file="$plugin"
+        echo $local_plugin_file
 
         if [[ -f "$local_plugin_file" ]]; then
             if [[ -f "$plugins_dir/$(basename "$local_plugin_file" | cut -d. -f1).sh" ]]; then
@@ -66,6 +67,7 @@ function invoke_plugin() {
                 plugin_file="$plugins_dir/$plugin.sh"
             else
                 plugin_file="$local_plugin_file"
+                echo "derp"
             fi
         else
             die "'$local_plugin_file' does not exist"

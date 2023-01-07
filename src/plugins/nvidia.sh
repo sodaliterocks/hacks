@@ -112,5 +112,3 @@ function check_nvidia_gpu() {
         fi
     fi
 }
-
-[[ $is_invoked != "true" ]] && rocks.sodalite.hacks $0 $@

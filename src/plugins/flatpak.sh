@@ -66,5 +66,3 @@ function install_flatpak_app() {
     say "Installing app '$app'..."
     flatpak install --assumeyes --noninteractive --or-update --system $repo $app $branch
 }
-
-[[ $is_invoked != "true" ]] && rocks.sodalite.hacks $0 $@
