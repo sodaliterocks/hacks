@@ -4,6 +4,7 @@ prog=$(basename "$(realpath -s "$0")")
 cmd=$@
 base_dir="$(dirname "$(realpath -s "$0")")"
 plugins_dir=""
+is_invoked="true"
 
 [[ ! -d "$base_dir/../.git" ]] && base_dir="/usr/libexec/rocks.sodalite.hacks"
 
@@ -57,10 +58,17 @@ function invoke_plugin() {
     plugin_file=""
 
     if [[ $plugin == "/"* ]]; then
-        if [[ -f $plugin ]]; then
-            plugin_file="$plugin"
+        local_plugin_file="$plugin"
+
+        if [[ -f "$local_plugin_file" ]]; then
+            if [[ -f "$plugins_dir/$(basename "$local_plugin_file" | cut -d. -f1).sh" ]]; then
+                plugin="$(basename "$local_plugin_file" | cut -d. -f1)"
+                plugin_file="$plugins_dir/$plugin.sh"
+            else
+                plugin_file="$local_plugin_file"
+            fi
         else
-            die "'$plugin' does not exist"
+            die "'$local_plugin_file' does not exist"
         fi
     else
         plugin_file="$plugins_dir/$plugin.sh"

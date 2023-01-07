@@ -356,3 +356,5 @@ function main() {
     update_status
     pid="$(del_pidfile)"
 }
+
+[[ $is_invoked != "true" ]] && rocks.sodalite.hacks $0 $@

@@ -70,3 +70,5 @@ function main() {
         *|search) die "No shim available for '$setting'" ;;
 	esac
 }
+
+[[ $is_invoked != "true" ]] && rocks.sodalite.hacks $0 $@

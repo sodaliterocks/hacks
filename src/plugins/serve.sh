@@ -33,3 +33,5 @@ function main() {
 
     [[ $? != 0 ]] && die "Unable to start server"
 }
+
+[[ $is_invoked != "true" ]] && rocks.sodalite.hacks $0 $@

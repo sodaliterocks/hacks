@@ -43,3 +43,5 @@ function main() {
         die "No option specified (see --help)"
     fi
 }
+
+[[ $is_invoked != "true" ]] && rocks.sodalite.hacks $0 $@
