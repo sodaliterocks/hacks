@@ -3,6 +3,7 @@
 _PLUGIN_TITLE=""
 _PLUGIN_DESCRIPTION=""
 _PLUGIN_OPTIONS=(
+    "test-die;;Invoke die()"
     "test-get-property;;Invoke get_property()"
     "test-get-random-string;;Invoke get_random_string()"
     "no-header;n;Don't print header"
@@ -20,6 +21,12 @@ function print_header() {
 function main() {
     if [[ $options == "" ]]; then
         say "Hello, world!"
+    fi
+
+    if [[ -n "$test_die" ]]; then
+        print_header "die()"
+        [[ $test_die == "true" ]] && test_die=""
+        eval "die $test_die"
     fi
 
     if [[ -n "$test_get_property" ]]; then
