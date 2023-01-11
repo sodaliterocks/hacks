@@ -89,6 +89,14 @@ function migrate_flatpak_apps() {
         echo "" > "$_installed_apps_file"
     fi
 
+    if [[ $(is_flatpak_report_installed "https://dl.flathub.org/repo/") != "true" ]]; then
+        update_status "Adding Flathub Flatpak remote..."
+        flatpak remote-add \
+            --if-not-exists \
+            --system \
+            flathub https://flathub.org/repo/flathub.flatpakrepo
+    fi
+
     if [[ $core == "pantheon" ]]; then
         if [[ $(is_flatpak_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
             update_status "Adding AppCenter Flatpak remote..."
@@ -100,7 +108,6 @@ function migrate_flatpak_apps() {
                 --gpg-import=/usr/share/gnupg/appcenter.gpg \
                 --homepage="https://appcenter.elementary.io/" \
                 --icon="https://flatpak.elementary.io/icon.svg" \
-                --if-not-exists \
                 --title="AppCenter" \
                 appcenter https://flatpak.elementary.io/repo/
 
@@ -144,7 +151,7 @@ function migrate_flatpak_apps() {
         "pantheon:appcenter:io.elementary.capnet-assist:stable"
         #"pantheon:appcenter:io.elementary.mail:stable" # Not yet stable
         "pantheon:appcenter:io.elementary.screenshot:stable"
-        #"pantheon:appcenter:io.elementary.tasks:stable" # Broken?
+        "pantheon:appcenter:io.elementary.tasks:stable"
         "pantheon:appcenter:io.elementary.videos:stable"
     )
 
