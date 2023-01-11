@@ -4,6 +4,7 @@ _PLUGIN_TITLE="Sodalite migration tools"
 _PLUGIN_DESCRIPTION=""
 _PLUGIN_OPTIONS=(
     "all;a;"
+    "cleanup-tool;;"
     "flatpak-apps;;"
     "hostname;;"
     "old-refs;;"
@@ -62,6 +63,22 @@ function update_status() {
         echo "$status"
         echo "$status" > $migrate_status_file
     fi
+}
+
+function migrate_cleanup_tool() {
+	[[ $force == "true" ]] && die "--force cannot be used with --cleanup-tool"
+	cleanup_tool_bin="rocks.sodalite.cleanup"
+	cleanup_tool_alias="sodalite-cleanup"
+
+	if [[ -f "/usr/libexec/$cleanup_tool_bin" ]]; then
+		rm -f "/usr/local/bin/$cleanup_tool_bin"
+		rm -f "/usr/local/bin/$cleanup_tool_alias"
+
+		cp "/usr/libexec/$cleanup_tool_bin" "/usr/local/bin/$cleanup_tool_bin"
+
+		chmod +x "/usr/local/bin/$cleanup_tool_bin"
+		ln -s "/usr/local/bin/$cleanup_tool_bin" "/usr/local/bin/$cleanup_tool_alias"
+	fi
 }
 
 function migrate_flatpak_apps() {
@@ -312,7 +329,12 @@ function main() {
         fi
     fi
 
-    [[ $all != "true" && $no_internet == "true" ]] && die "--no-internet cannot be used without --all"
+    [[ $all != "true" && $no_internet == "true" ]] && die "--no-internet cannot be used with --all"
+
+	if [[ $cleanup_tool == "true" ]]; then
+        has_run="true"
+        migrate_cleanup_tool
+    fi
 
     if [[ $flatpak_apps == "true" ]]; then
         has_run="true"
@@ -339,6 +361,7 @@ function main() {
 
         has_run="true"
 
+		migrate_cleanup_tool
         migrate_hostname
         migrate_locale
         migrate_user_data
