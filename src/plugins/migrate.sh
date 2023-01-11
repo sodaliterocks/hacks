@@ -89,7 +89,7 @@ function migrate_flatpak_apps() {
         echo "" > "$_installed_apps_file"
     fi
 
-    if [[ $(is_flatpak_report_installed "https://dl.flathub.org/repo/") != "true" ]]; then
+    if [[ $(is_flatpak_repo_installed "https://dl.flathub.org/repo/") != "true" ]]; then
         update_status "Adding Flathub Flatpak remote..."
         flatpak remote-add \
             --if-not-exists \
