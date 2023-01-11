@@ -43,7 +43,7 @@ function is_flatpak_app_installed() {
 }
 
 function is_flatpak_repo_installed() {
-    if [[ $(flatpak remotes --columns=url --system | grep "$1") ]]; then
+    if [[ $(flatpak remotes --columns=url --show-disabled --system | grep "$1") ]]; then
         echo "true"
     fi
 }
@@ -110,15 +110,11 @@ function migrate_flatpak_apps() {
                 --icon="https://flatpak.elementary.io/icon.svg" \
                 --title="AppCenter" \
                 appcenter https://flatpak.elementary.io/repo/
-
-            if [[ $(is_flatpak_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
-                update_status "Adding Flathub Flatpak remote..."
-                flatpak remote-add \
-                    --if-not-exists \
-                    --system \
-                    flathub https://flathub.org/repo/flathub.flatpakrepo
-            fi
         fi
+
+        update_status "Enabling various Flatpak remotes..."
+        flatpak remote-modify appcenter --enable
+        flatpak remote-modify flathub --enable
     fi
 
     # TODO: Migrate GNOME apps to use Flathub?
