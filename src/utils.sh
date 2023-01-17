@@ -32,6 +32,22 @@ function del_property() {
     fi
 }
 
+function debug() {
+    if [[ $SODALITE_HACKS_DEBUG == "true" ]]; then
+        say debug "$@"
+    fi
+}
+
+function die() {
+    say error "$@"
+    exit 255
+}
+
+function emj() {
+    emoji="$1"
+    emoji_length=${#emoji}
+    echo "$emoji$(eval "for i in {1..$emoji_length}; do echo -n " "; done")"
+}
 
 function get_answer() {
     question=$@
@@ -148,6 +164,70 @@ function rost_apply_live() {
     fi
 }
 
+function say() {
+	color=""
+	emoji=""
+    message="${@:2}"
+    output=""
+    prefix=""
+    style="0"
+
+    if [[ "$2" != "" ]]; then
+    	message="$2"
+    	type="$1"
+    else
+    	message="$1"
+    fi
+
+    case $1 in
+        debug)
+            color="35"
+            prefix="Debug"
+            ;;
+        error)
+            color="31"
+            prefix="Error"
+            style="1"
+            ;;
+        info)
+            color="34"
+            style="1"
+            ;;
+        primary)
+            color="37"
+            style="1"
+            ;;
+        warning)
+            color="33"
+            style="1"
+            ;;
+        *|default)
+            color="0"
+            message="$@"
+            ;;
+    esac
+
+    if [[ $prefix == "" ]]; then
+        output="\033[${style};${color}m${message}\033[0m"
+    else
+        output="\033[1;${color}m${prefix}"
+
+        if [[ $message == "" ]]; then
+            output+="!"
+        else
+            output+=": \033[${style};${color}m${message}\033[0m"
+        fi
+
+        output+="\033[0m"
+    fi
+
+    if [[ $emoji != "" ]]; then
+        output="$(emj "$emoji")$output"
+    fi
+
+    echo -e "$output"
+}
+
 function set_pidfile() {
     pid="$$"
     pidfile=""
@@ -189,9 +269,24 @@ function source_plugin() {
     plugin_file=$1
 
     export -f die
-    export -f say
 
     . $plugin_file > /dev/null 2>&1
+}
+
+function toggle_service() {
+    service="$1"
+
+    if [ $(systemctl list-unit-files "$service" | wc -l) -gt 3 ]; then
+        service_status="$(systemctl is-enabled "$service")"
+
+        if [[ $service_status == "enabled" ]]; then
+            systemctl disable --now "$service"
+        else
+            systemctl enable --now "$service"
+        fi
+    else
+        die "Service '$service' does not exist"
+    fi
 }
 
 function touchp() {

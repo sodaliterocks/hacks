@@ -11,26 +11,6 @@ plugins_dir=""
 plugins_dir="$base_dir/plugins"
 . $base_dir/utils.sh
 
-function die() {
-    message=$@
-    prefix="Error:"
-    [[ $message == "" ]] && prefix="Error!"
-    say "\033[1;31m$prefix $message\033[0m"
-    exit 255
-}
-
-function debug() {
-    if [[ $SODALITE_HACKS_DEBUG == "true" ]]; then
-        message=$@
-        say "\033[1;33mDebug:\033[0m $message"
-    fi
-}
-
-function say() {
-    message=$@
-    echo -e "$@"
-}
-
 function print_help() {
     say "Sodalite Hacks"
     say "\nUsage:"
