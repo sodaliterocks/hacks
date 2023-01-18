@@ -380,4 +380,5 @@ function main() {
 
     update_status
     pid="$(del_pidfile)"
+    exit 0
 }
