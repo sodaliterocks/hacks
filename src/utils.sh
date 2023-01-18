@@ -267,9 +267,6 @@ function set_property() {
 
 function source_plugin() {
     plugin_file=$1
-
-    export -f die
-
     . $plugin_file > /dev/null 2>&1
 }
 

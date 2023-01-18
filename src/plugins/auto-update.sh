@@ -34,8 +34,6 @@ function main() {
             delay_init=$(( $delay_init - $uptime ))
             say info "System recently booted. Waiting $delay_init seconds..."
             sleep $delay_init
-        else
-            break
         fi
 
         say primary "Checking for updates..."
