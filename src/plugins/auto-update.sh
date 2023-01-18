@@ -5,7 +5,6 @@ delay_check_logged_in_reboot=10
 delay_check_logged_in_update=60
 delay_check_updates=10800
 delay_update_retry=60
-service_file=""
 
 _PLUGIN_TITLE="Auto Updater"
 _PLUGIN_DESCRIPTION=""
