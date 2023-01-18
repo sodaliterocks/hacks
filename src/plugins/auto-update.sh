@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 delay_init=600
-delay_check_logged_in=60
+delay_check_logged_in_reboot=10
+delay_check_logged_in_update=60
 delay_check_updates=10800
 delay_update_retry=60
 service_file=""
@@ -14,6 +15,15 @@ _PLUGIN_OPTIONS=(
 )
 _PLUGIN_HIDDEN="true"
 _PLUGIN_ROOT="true"
+
+function is_logged_in_users() {
+    logged_in_users="$(users | sed -s 's/root//g')"
+    if [[ $logged_in_users != "" ]]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
 
 function main() {
     if [[ $toggle_service == "true" ]]; then
@@ -41,13 +51,12 @@ function main() {
 
         if [[ $? -ne 77 ]]; then
             while true; do
-                logged_in_users="$(users | sed -s 's/root//g')"
                 update="false"
 
                 if [[ $ignore_logged_in == "true" ]]; then
                     update="true"
                 else
-                    if [[ "$logged_in_users" == "" ]]; then
+                    if [[ $(is_logged_in_users) == "false" ]]; then
                         update="true"
                     fi
                 fi
@@ -57,15 +66,23 @@ function main() {
                     rpm-ostree upgrade --unchanged-exit-77
 
                     if [[ $? -ne 77 ]]; then
-                        say info "Restarting OS..."
-                        shutdown -r now
+                        while true; do
+                            say info "Restarting OS..."
+                            if [[ $(is_logged_in_users) == "false" ]]; then
+                                shutdown -r now
+                                exit 0
+                            else
+                                say info "Users logged in. Waiting $delay_checked_logged_in_reboot seconds..."
+                                sleep $delay_checked_logged_in_reboot
+                            fi
+                        done
                     else
                         say warning "Update pending but nothing deployed. Retrying in $delay_update_retry seconds..."
                         sleep $delay_update_retry
                     fi
                 else
-                    say info "Users logged in ($logged_in_users). Waiting $delay_check_logged_in seconds..."
-                    sleep $delay_check_logged_in
+                    say info "Users logged in. Waiting $delay_check_logged_in_update seconds..."
+                    sleep $delay_check_logged_in_update
                 fi
             done
         else

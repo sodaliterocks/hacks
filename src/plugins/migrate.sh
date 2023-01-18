@@ -366,7 +366,6 @@ function main() {
 
 		migrate_cleanup_tool
         migrate_hostname
-        migrate_locale
         migrate_user_data
 
         if [[ $no_internet != "true" ]]; then
