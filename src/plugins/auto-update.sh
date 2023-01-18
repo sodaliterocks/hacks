@@ -72,8 +72,8 @@ function main() {
                                 shutdown -r now
                                 exit 0
                             else
-                                say info "Users logged in. Waiting $delay_checked_logged_in_reboot seconds..."
-                                sleep $delay_checked_logged_in_reboot
+                                say info "Users logged in. Waiting $delay_check_logged_in_reboot seconds..."
+                                sleep $delay_check_logged_in_reboot
                             fi
                         done
                     else
