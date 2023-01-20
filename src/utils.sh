@@ -125,7 +125,8 @@ function get_vardir() {
 
 function parse_file_uri() {
     file="$1"
-    echo "$1" | sed "s/file:\/\///g" | sed "s/'//g"
+    uri="$(echo "$1" | sed "s/file:\/\///g" | sed "s/'//g")"
+    echo "$(parse_uri "$uri")"
 }
 
 function parse_plugin_option() {
@@ -134,6 +135,10 @@ function parse_plugin_option() {
     _PLUGIN_OPTION_PARAM="${option[0]}"
     _PLUGIN_OPTION_SHORT="${option[1]}"
     _PLUGIN_OPTION_HELP="${option[2]}"
+}
+
+function parse_uri() {
+    : "${*//+/ }"; echo -e "${_//%/\\x}";
 }
 
 function repeat() {
