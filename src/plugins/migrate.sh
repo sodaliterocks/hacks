@@ -149,6 +149,7 @@ function migrate_flatpak_apps() {
         "pantheon:appcenter:io.elementary.screenshot:stable"
         "pantheon:appcenter:io.elementary.tasks:stable"
         "pantheon:appcenter:io.elementary.videos:stable"
+        "pantheon:flathub:org.freedesktop.Pantheon:22.08"
     )
 
     apps_no_install=(
