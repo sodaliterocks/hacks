@@ -111,11 +111,11 @@ function migrate_flatpak_apps() {
                 --title="AppCenter" \
                 appcenter https://flatpak.elementary.io/repo/
         fi
-
-        update_status "Enabling various Flatpak remotes..."
-        flatpak remote-modify appcenter --enable
-        flatpak remote-modify flathub --enable
     fi
+
+    update_status "Enabling various Flatpak remotes..."
+    [[ $core == "pantheon" ]] && flatpak remote-modify appcenter --enable
+    flatpak remote-modify flathub --enable
 
     # TODO: Migrate GNOME apps to use Flathub?
     apps=(
