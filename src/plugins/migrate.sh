@@ -287,7 +287,7 @@ function migrate_old_refs() {
 }
 
 function migrate_user_data() {
-    [[ $force == "true" ]] && die "--force cannot be used with --users"
+    [[ $force == "true" ]] && die "--force cannot be used with --user-data"
 
     skel_files=(
         ".bashrc"
@@ -306,6 +306,20 @@ function migrate_user_data() {
                 if [[ $(get_core) == "pantheon" ]]; then
                     update_status "Setting locale for '$user' to '$system_locale'..."
                     set_property "$user_file" Language "$system_locale"
+                fi
+
+                if [[ -d "$user_home/Desktop" ]]; then
+                    if [[ $(get_core) == "pantheon" ]]; then
+                        if [ -z "$(ls -A "$user_home/Desktop")" ]; then
+                            update_status "Removing Desktop directory for '$user'..."
+                            rm -rf "$user_home/Desktop"
+                        fi
+                    fi
+                else
+                    if [[ $(get_core) != "pantheon" ]]; then
+                        update_status "Creating Desktop directory for '$user'..."
+                        mkdir -p "$user_home/Desktop"
+                    fi
                 fi
 
                 update_status "Installing skel for '$user'..."
