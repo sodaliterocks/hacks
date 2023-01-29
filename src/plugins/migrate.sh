@@ -319,6 +319,7 @@ function migrate_user_data() {
                     if [[ $(get_core) != "pantheon" ]]; then
                         update_status "Creating Desktop directory for '$user'..."
                         mkdir -p "$user_home/Desktop"
+                        chmod -r "$user":"$user" "$user_home/Desktop"
                     fi
                 fi
 
