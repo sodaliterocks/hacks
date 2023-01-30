@@ -304,8 +304,10 @@ function migrate_user_data() {
                 user_home="$(echo $passwd_ent | cut -d ":" -f6)"
 
                 if [[ $(get_core) == "pantheon" ]]; then
-                    update_status "Setting locale for '$user' to '$system_locale'..."
-                    set_property "$user_file" Language "$system_locale"
+                    if [[ "$(get_property "$user_file" Language)" == "" ]]; then
+                        update_status "Setting locale for '$user' to '$system_locale'..."
+                        set_property "$user_file" Language "$system_locale"
+                    fi
                 fi
 
                 if [[ -d "$user_home/Desktop" ]]; then
