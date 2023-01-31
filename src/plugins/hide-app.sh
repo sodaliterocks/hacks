@@ -22,7 +22,8 @@ function main() {
             if [[ "$desktop_file" == "$(basename "$f")" ]]; then
                 if [[ "$desktop_file" != "$HOME/.local/share/applications"* ]]; then
                     found="true"
-                    found_app_name="$(get_property $f "Name")"
+                    #found_app_name="$(get_property $f "Name")"
+                    found_app_name="$(echo $desktop_file | sed s/.desktop//)"
                     break
                 fi
             fi
@@ -46,7 +47,7 @@ function main() {
             hide="false"
 
             if [[ $confirm_before_hiding ]]; then
-                confirm_question="Are you sure you want to hide '$(echo $desktop_file | sed s/.desktop//)'?"
+                confirm_question="Are you sure you want to hide '$found_app_name'?"
 
                 if [[ $DISPLAY != "" ]]; then
                     zenity --question \
