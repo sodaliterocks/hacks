@@ -46,7 +46,7 @@ function main() {
             hide="false"
 
             if [[ $confirm_before_hiding ]]; then
-                confirm_question="Are you sure you want to hide '$found_app_name'?"
+                confirm_question="Are you sure you want to hide '$(echo $desktop_file | sed s/.desktop//)'?"
 
                 if [[ $DISPLAY != "" ]]; then
                     zenity --question \
