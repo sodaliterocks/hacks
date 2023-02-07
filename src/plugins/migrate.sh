@@ -262,17 +262,11 @@ function migrate_old_refs() {
         ref_to_migrate_to=""
 
         case "$current_ref:$(echo $current_version | cut -d "." -f1).$(echo $current_version | cut -d "." -f2 | cut -d "+" -f1 | cut -d " " -f1)" in
-            "sodalite/stable/x86_64/base:36-23.0")
-                ref_to_migrate_to="sodalite/stable/x86_64/desktop"
+            "sodalite/stable/x86_64/desktop:"*)
+                ref_to_migrate_to="sodalite/current/x86_64/desktop"
                 ;;
-            "sodalite/f36/x86_64/base:36-23.0")
-                ref_to_migrate_to="sodalite/f36/x86_64/desktop"
-                ;;
-            "sodalite/next/x86_64/base:38-23.0")
-                ref_to_migrate_to="sodalite/next/x86_64/desktop"
-                ;;
-            "sodalite/devel/x86_64/base:36-22.14")
-                ref_to_migrate_to="sodalite/devel/x86_64/desktop"
+            "sodalite/f37/x86_64/desktop:"*)
+                ref_to_migrate_to="sodalite/4/x86_64/desktop"
                 ;;
         esac
 
@@ -282,7 +276,7 @@ function migrate_old_refs() {
             rpm-ostree rebase "$current_remote:$ref_to_migrate_to"
         fi
     fi
-    
+
     set +f
 }
 
