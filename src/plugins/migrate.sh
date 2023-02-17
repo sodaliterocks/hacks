@@ -17,6 +17,11 @@ _PLUGIN_ROOT="true"
 
 _installed_apps_file="$(get_vardir)/unattended-installed-apps"
 
+function get_flatpak_repo_name() {
+    remote_name="$(flatpak remotes --columns=name,url --show-disabled --system | grep "$1"  | sed "s/\thttps:.*//")"
+    [[ $remote_name != "" ]] && echo $remote_name
+}
+
 function install_flatpak_app() {
     repo=$1
     app=$2
@@ -40,12 +45,6 @@ function is_flatpak_app_installed() {
     fi
 
     echo $installed
-}
-
-function is_flatpak_repo_installed() {
-    if [[ $(flatpak remotes --columns=url --show-disabled --system | grep "$1") ]]; then
-        echo "true"
-    fi
 }
 
 function update_status() {
@@ -85,20 +84,27 @@ function migrate_flatpak_apps() {
     run_flatpak_uninstall_unused="false"
     touch "$_installed_apps_file"
 
+    flatpak_repo_flathub_name="flathub"
+    flatpak_repo_flathub_url="https://dl.flathub.org/repo/"
+    flatpak_repo_appcenter_name="appcenter"
+    flatpak_repo_appcenter_url="https://flatpak.elementary.io/repo/"
+
     if [[ $force == "true" ]]; then
         echo "" > "$_installed_apps_file"
     fi
 
-    if [[ $(is_flatpak_repo_installed "https://dl.flathub.org/repo/") != "true" ]]; then
+    if [[ $(get_flatpak_repo_name "$flatpak_repo_flathub_url") == "" ]]; then
         update_status "Adding Flathub Flatpak remote..."
         flatpak remote-add \
             --if-not-exists \
             --system \
-            flathub https://flathub.org/repo/flathub.flatpakrepo
+            $flatpak_repo_flathub_name https://flathub.org/repo/flathub.flatpakrepo
+    else
+        flatpak_repo_flathub_name="$(get_flatpak_repo_name "$flatpak_repo_flathub_url")"
     fi
 
     if [[ $core == "pantheon" ]]; then
-        if [[ $(is_flatpak_repo_installed "https://flatpak.elementary.io/repo/") != "true" ]]; then
+        if [[ $(get_flatpak_repo_name "$flatpak_repo_appcenter_url") == "" ]]; then
             update_status "Adding AppCenter Flatpak remote..."
             flatpak remote-add \
                 --if-not-exists \
@@ -110,12 +116,14 @@ function migrate_flatpak_apps() {
                 --icon="https://flatpak.elementary.io/icon.svg" \
                 --title="AppCenter" \
                 appcenter https://flatpak.elementary.io/repo/
+        else
+            flatpak_repo_appcenter_name="$(get_flatpak_repo_name "$flatpak_repo_appcenter_url")"
         fi
     fi
 
     update_status "Enabling various Flatpak remotes..."
-    [[ $core == "pantheon" ]] && flatpak remote-modify appcenter --enable
-    flatpak remote-modify flathub --enable
+    [[ $core == "pantheon" ]] && flatpak remote-modify $flatpak_repo_appcenter_name --enable
+    flatpak remote-modify $flatpak_repo_flathub_name --enable
 
     # TODO: Migrate GNOME apps to use Flathub?
     apps=(
@@ -138,18 +146,18 @@ function migrate_flatpak_apps() {
         "gnome:fedora:org.gnome.Screenshot"
         "gnome:fedora:org.gnome.TextEditor"
         "gnome:fedora:org.gnome.Weather"
-        "pantheon:appcenter:io.elementary.Platform:7.1"
-        "pantheon:appcenter:org.gnome.Evince:stable"
-        "pantheon:appcenter:org.gnome.FileRoller:stable"
-        "pantheon:appcenter:io.elementary.calculator:stable"
-        "pantheon:appcenter:io.elementary.calendar:stable"
-        "pantheon:appcenter:io.elementary.camera:stable"
-        "pantheon:appcenter:io.elementary.capnet-assist:stable"
-        #"pantheon:appcenter:io.elementary.mail:stable" # Not yet stable
-        "pantheon:appcenter:io.elementary.screenshot:stable"
-        "pantheon:appcenter:io.elementary.tasks:stable"
-        "pantheon:appcenter:io.elementary.videos:stable"
-        "pantheon:flathub:org.freedesktop.Platform:22.08"
+        "pantheon:$flatpak_repo_appcenter_name:io.elementary.Platform:7.1"
+        "pantheon:$flatpak_repo_appcenter_name:org.gnome.Evince:stable"
+        "pantheon:$flatpak_repo_appcenter_name:org.gnome.FileRoller:stable"
+        "pantheon:$flatpak_repo_appcenter_name:io.elementary.calculator:stable"
+        "pantheon:$flatpak_repo_appcenter_name:io.elementary.calendar:stable"
+        "pantheon:$flatpak_repo_appcenter_name:io.elementary.camera:stable"
+        "pantheon:$flatpak_repo_appcenter_name:io.elementary.capnet-assist:stable"
+        #"pantheon:$flatpak_repo_appcenter_name:io.elementary.mail:stable" # Not yet stable
+        "pantheon:$flatpak_repo_appcenter_name:io.elementary.screenshot:stable"
+        "pantheon:$flatpak_repo_appcenter_name:io.elementary.tasks:stable"
+        "pantheon:$flatpak_repo_appcenter_name:io.elementary.videos:stable"
+        "pantheon:$flatpak_repo_flathub_name:org.freedesktop.Platform:22.08"
     )
 
     apps_no_install=(
