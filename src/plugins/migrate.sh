@@ -266,7 +266,7 @@ function migrate_old_refs() {
                 ref_to_migrate_to="sodalite/current/x86_64/desktop"
                 ;;
             "sodalite/f37/x86_64/desktop:"*)
-                ref_to_migrate_to="sodalite/4/x86_64/desktop"
+                ref_to_migrate_to="sodalite/long-4/x86_64/desktop"
                 ;;
         esac
 
