@@ -89,7 +89,11 @@ function invoke_plugin() {
                         param="-$_PLUGIN_OPTION_SHORT, $param"
                     fi
 
-                    say "  $param\t$_PLUGIN_OPTION_HELP"
+                    if [[ $_PLUGIN_OPTION_PARAM == ex-*  ]]; then
+                        debug "Experimental parameter: $param"
+                    else
+                        say "  $param\t$_PLUGIN_OPTION_HELP"
+                    fi
                 done
             else
                 say "  $prog $plugin"
