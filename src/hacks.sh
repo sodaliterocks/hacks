@@ -11,6 +11,14 @@ plugins_dir=""
 plugins_dir="$base_dir/plugins"
 . $base_dir/utils.sh
 
+function parse_plugin_option() {
+    IFS=";" read -r -a option <<< "${@}"
+
+    _PLUGIN_OPTION_PARAM="${option[0]}"
+    _PLUGIN_OPTION_SHORT="${option[1]}"
+    _PLUGIN_OPTION_HELP="${option[2]}"
+}
+
 function print_help() {
     say "Sodalite Hacks"
     say "\nUsage:"

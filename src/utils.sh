@@ -129,14 +129,6 @@ function parse_file_uri() {
     echo "$(parse_uri "$uri")"
 }
 
-function parse_plugin_option() {
-    IFS=";" read -r -a option <<< "${@}"
-
-    _PLUGIN_OPTION_PARAM="${option[0]}"
-    _PLUGIN_OPTION_SHORT="${option[1]}"
-    _PLUGIN_OPTION_HELP="${option[2]}"
-}
-
 function parse_uri() {
     : "${*//+/ }"; echo -e "${_//%/\\x}";
 }
