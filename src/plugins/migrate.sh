@@ -240,7 +240,7 @@ function migrate_flatpak_apps() {
 function migrate_hostname() {
     current_hostname=$(hostnamectl hostname)
 
-    if [[ $force == "true" ]] || [[ $current_hostname == "fedora" ]]; then
+    if [[ $force == "true" ]] || [[ $current_hostname == "fedora" ]] || [[ $current_hostname == "localhost" ]] || [[ $current_hostname == "" ]]; then
         new_hostname="sodalite-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-6} | head -n 1)"
         update_status "Setting hostname to '$new_hostname'..."
         hostnamectl hostname "$new_hostname"
