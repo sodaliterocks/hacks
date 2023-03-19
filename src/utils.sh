@@ -114,7 +114,7 @@ function get_random_string() {
         amount=6
     fi
 
-    eval "cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-$amount}| head -n 1"
+    eval "echo $RANDOM | md5sum | head -c ${amount}; echo;"
 }
 
 function get_vardir() {
