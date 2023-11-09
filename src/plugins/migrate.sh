@@ -241,7 +241,15 @@ function migrate_hostname() {
     current_hostname=$(hostnamectl hostname)
 
     if [[ $force == "true" ]] || [[ $current_hostname == "fedora" ]] || [[ $current_hostname == "localhost" ]] || [[ $current_hostname == "" ]]; then
-        new_hostname="sodalite-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-6} | head -n 1)"
+        hostname_array=()
+
+        for i in {a..z} {A..Z} {0..9}; 
+           do
+           hostname_array[$RANDOM]=$i
+        done
+
+        new_hostname="sodalite-$(printf %s ${array[@]::6} $'\n')"
+
         update_status "Setting hostname to '$new_hostname'..."
         hostnamectl hostname "$new_hostname"
     fi
