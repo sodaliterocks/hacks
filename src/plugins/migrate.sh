@@ -250,7 +250,7 @@ function migrate_hostname() {
            hostname_array[$RANDOM]=$i
         done
 
-        new_hostname="sodalite-$(printf %s ${array[@]::6} $'\n')"
+        new_hostname="sodalite-$(printf %s ${hostname_array[@]::6} $'\n')"
 
         update_status "Setting hostname to '$new_hostname'..."
         hostnamectl hostname "$new_hostname"
