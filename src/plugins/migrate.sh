@@ -127,27 +127,24 @@ function migrate_flatpak_apps() {
 
     # TODO: Migrate GNOME apps to use Flathub?
     apps=(
-        "gnome:fedora:org.gnome.baobab"
-        "gnome:fedora:org.gnome.Calculator"
-        "gnome:fedora:org.gnome.Calendar"
-        "gnome:fedora:org.gnome.Characters"
-        "gnome:fedora:org.gnome.Cheese"
-        "gnome:fedora:org.gnome.clocks"
-        "gnome:fedora:org.gnome.Connections"
-        "gnome:fedora:org.gnome.Contacts"
-        "gnome:fedora:org.gnome.eog"
-        "gnome:fedora:org.gnome.Evince"
-        "gnome:fedora:org.gnome.Extensions"
-        "gnome:fedora:org.gnome.FileRoller"
-        "gnome:fedora:org.gnome.font-viewer"
-        "gnome:fedora:org.gnome.gedit"
-        "gnome:fedora:org.gnome.Logs"
-        "gnome:fedora:org.gnome.Loupe"
-        "gnome:fedora:org.gnome.Maps"
-        "gnome:fedora:org.gnome.NautilusPreviewer"
-        "gnome:fedora:org.gnome.Screenshot"
-        "gnome:fedora:org.gnome.TextEditor"
-        "gnome:fedora:org.gnome.Weather"
+        "gnome:fedora:org.gnome.baobab:stable"
+        "gnome:fedora:org.gnome.Calculator:stable"
+        "gnome:fedora:org.gnome.Calendar:stable"
+        "gnome:fedora:org.gnome.Characters:stable"
+        "gnome:fedora:org.gnome.Cheese:stable"
+        "gnome:fedora:org.gnome.clocks:stable"
+        "gnome:fedora:org.gnome.Connections:stable"
+        "gnome:fedora:org.gnome.Contacts:stable"
+        "gnome:fedora:org.gnome.Evince:stable"
+        "gnome:fedora:org.gnome.Extensions:stable"
+        "gnome:fedora:org.gnome.FileRoller:stable"
+        "gnome:fedora:org.gnome.font-viewer:stable"
+        "gnome:fedora:org.gnome.Logs:stable"
+        "gnome:fedora:org.gnome.Loupe:stable"
+        "gnome:fedora:org.gnome.Maps:stable"
+        "gnome:fedora:org.gnome.NautilusPreviewer:stable"
+        "gnome:fedora:org.gnome.TextEditor:stable"
+        "gnome:fedora:org.gnome.Weather:stable"
         "pantheon:$flatpak_repo_appcenter_name:io.elementary.Platform:7.1"
         "pantheon:$flatpak_repo_appcenter_name:org.gnome.Evince:stable"
         "pantheon:$flatpak_repo_appcenter_name:org.gnome.FileRoller:stable"
@@ -163,6 +160,7 @@ function migrate_flatpak_apps() {
     )
 
     apps_no_install=(
+        "gnome:fedora:org.gnome.eog"
         "gnome:fedora:org.gnome.gedit"
     )
 
