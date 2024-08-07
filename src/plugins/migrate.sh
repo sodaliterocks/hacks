@@ -136,7 +136,6 @@ function migrate_flatpak_apps() {
         "gnome:fedora:org.gnome.Connections:stable"
         "gnome:fedora:org.gnome.Contacts:stable"
         "gnome:fedora:org.gnome.Evince:stable"
-        "gnome:fedora:org.gnome.Extensions:stable"
         "gnome:fedora:org.gnome.FileRoller:stable"
         "gnome:fedora:org.gnome.font-viewer:stable"
         "gnome:fedora:org.gnome.Logs:stable"
